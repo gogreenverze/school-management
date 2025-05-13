@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - School Management System{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Admin Dashboard</h1>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="stat-card primary">
+            <h3>Students</h3>
+            <p>{{ total_students }}</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card secondary">
+            <h3>Teachers</h3>
+            <p>{{ total_teachers }}</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card dark">
+            <h3>Parents</h3>
+            <p>{{ total_parents }}</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card grey">
+            <h3>Classes</h3>
+            <p>{{ total_classes|default(0) }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('admin.user_list') }}" class="btn btn-primary w-100">
+                            <i class="fas fa-users"></i> Manage Users
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('admin.content_list') }}" class="btn btn-secondary w-100">
+                            <i class="fas fa-edit"></i> Manage Content
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="/admin/" class="btn btn-dark w-100">
+                            <i class="fas fa-cogs"></i> Admin Panel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Activities</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>New student registered</strong>
+                                <p class="mb-0 text-muted">John Doe registered as a new student</p>
+                            </div>
+                            <span class="text-muted">2 hours ago</span>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Fee payment received</strong>
+                                <p class="mb-0 text-muted">Jane Smith paid $500 for tuition fees</p>
+                            </div>
+                            <span class="text-muted">5 hours ago</span>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Content updated</strong>
+                                <p class="mb-0 text-muted">Home page content was updated</p>
+                            </div>
+                            <span class="text-muted">1 day ago</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">System Information</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Database Status
+                        <span class="badge bg-success rounded-pill">Connected</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Email Service
+                        <span class="badge bg-success rounded-pill">Active</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Storage Usage
+                        <span class="badge bg-info rounded-pill">45%</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        System Version
+                        <span class="badge bg-secondary rounded-pill">1.0.0</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Upcoming Events</h5>
+            </div>
+            <div class="card-body">
+                <div class="event mb-3">
+                    <h6>Teacher's Meeting</h6>
+                    <p class="text-muted mb-1"><i class="fas fa-calendar-alt"></i> July 5, 2023</p>
+                    <p class="mb-0">Monthly staff meeting to discuss academic progress.</p>
+                </div>
+                <hr>
+                <div class="event">
+                    <h6>Parent-Teacher Conference</h6>
+                    <p class="text-muted mb-1"><i class="fas fa-calendar-alt"></i> July 15, 2023</p>
+                    <p class="mb-0">Quarterly meeting with parents to discuss student progress.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Content Management - School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Content Management</h1>
+    <a href="{{ url_for('admin.content_create') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add New Content
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Title</th>
+                        <th>Location</th>
+                        <th>Order</th>
+                        <th>Status</th>
+                        <th>Last Updated</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for content_block in content_blocks %}
+                        <tr>
+                            <td>{{ content_block.name }}</td>
+                            <td>{{ content_block.title }}</td>
+                            <td>{{ content_block.location }}</td>
+                            <td>{{ content_block.order }}</td>
+                            <td>
+                                {% if content_block.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ content_block.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                <a href="{{ url_for('admin.content_edit', id=content_block.id) }}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ content_block.id }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                
+                                <!-- Delete Modal -->
+                                <div class="modal fade" id="deleteModal{{ content_block.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ content_block.id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteModalLabel{{ content_block.id }}">Confirm Delete</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete the content block "{{ content_block.name }}"?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <form action="{{ url_for('admin.content_delete', id=content_block.id) }}" method="POST">
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center">No content blocks found.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
