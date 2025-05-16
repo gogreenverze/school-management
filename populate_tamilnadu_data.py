@@ -373,15 +373,18 @@ def populate_sports(conn):
 
             try:
                 cursor.execute('''
-                    INSERT INTO sports (name, category, instructor_id, schedule, location, description)
-                    VALUES (?, ?, ?, ?, ?, ?)
+                    INSERT INTO sports (name, category, instructor_id, schedule, location, description, is_active, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     sport['name'],
                     sport['category'],
                     instructor_id,
                     sport['schedule'],
                     sport['location'],
-                    sport['description']
+                    sport['description'],
+                    1,  # is_active = True
+                    now,
+                    now
                 ))
                 added_count += 1
 
