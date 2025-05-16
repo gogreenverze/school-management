@@ -30,7 +30,12 @@ def create_app():
 
     # Configuration
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-for-development')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///school.db')
+    # Ensure instance folder exists
+    instance_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'instance')
+    os.makedirs(instance_path, exist_ok=True)
+
+    # Set database URI to use instance folder
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///instance/school.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # File upload configuration
