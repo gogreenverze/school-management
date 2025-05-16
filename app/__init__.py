@@ -96,7 +96,8 @@ def create_app():
         template_mode='bootstrap4',
         url='/admin_panel',
         endpoint='admin_panel',
-        index_view=SecureAdminIndexView()
+        base_template='admin/base.html',
+        index_view=SecureAdminIndexView(name='Home', url='/admin_panel', endpoint='admin_panel_index')
     )
 
     # Initialize admin views
