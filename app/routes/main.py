@@ -223,7 +223,7 @@ def sport_detail(sport_id):
         'location': sport.location,
         'category': sport.category,
         'fees': fees,
-        'capacity': sport.capacity,
+        'capacity': sport.capacity or 30,  # Default to 30 if capacity is None
         'enrolled': len(sport.students)
     }
 

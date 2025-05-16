@@ -14,7 +14,7 @@
         align-items: flex-end;
         margin-bottom: 30px;
     }
-    
+
     .sport-detail-header::before {
         content: '';
         position: absolute;
@@ -24,14 +24,14 @@
         height: 100%;
         background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%);
     }
-    
+
     .sport-detail-header-content {
         position: relative;
         z-index: 1;
         padding: 30px;
         width: 100%;
     }
-    
+
     .sport-icon {
         font-size: 3rem;
         margin-bottom: 15px;
@@ -44,11 +44,11 @@
         text-align: center;
         border-radius: 50%;
     }
-    
+
     .sport-detail-content {
         padding: 30px 0;
     }
-    
+
     .sport-info-card {
         border-radius: 10px;
         overflow: hidden;
@@ -56,34 +56,34 @@
         margin-bottom: 30px;
         transition: all 0.3s ease;
     }
-    
+
     .sport-info-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     }
-    
+
     .sport-info-header {
         background-color: var(--dark);
         color: white;
         padding: 15px 20px;
     }
-    
+
     .sport-info-body {
         padding: 20px;
     }
-    
+
     .sport-info-item {
         margin-bottom: 15px;
         display: flex;
         align-items: flex-start;
     }
-    
+
     .sport-info-item i {
         color: var(--primary);
         margin-right: 10px;
         margin-top: 3px;
     }
-    
+
     .fee-option {
         border: 1px solid #eee;
         border-radius: 10px;
@@ -91,40 +91,40 @@
         margin-bottom: 15px;
         transition: all 0.3s ease;
     }
-    
+
     .fee-option:hover {
         border-color: var(--primary);
         box-shadow: 0 5px 15px rgba(0,0,0,0.05);
     }
-    
+
     .fee-name {
         font-weight: 600;
         color: var(--dark);
     }
-    
+
     .fee-amount {
         font-size: 1.5rem;
         color: var(--primary);
         font-weight: 700;
     }
-    
+
     .fee-frequency {
         font-size: 0.9rem;
         color: #666;
     }
-    
+
     .join-btn {
         padding: 12px 30px;
         font-weight: 600;
         border-radius: 50px;
         transition: all 0.3s ease;
     }
-    
+
     .join-btn:hover {
         transform: translateY(-3px);
         box-shadow: 0 10px 20px rgba(212, 0, 110, 0.2);
     }
-    
+
     .capacity-bar {
         height: 10px;
         border-radius: 5px;
@@ -132,7 +132,7 @@
         margin-bottom: 10px;
         overflow: hidden;
     }
-    
+
     .capacity-progress {
         height: 100%;
         background-color: var(--primary);
@@ -166,7 +166,7 @@
                 </div>
                 <div class="sport-info-body">
                     <p>{{ sport.description }}</p>
-                    
+
                     <div class="sport-info-item">
                         <i class="fas fa-calendar-alt"></i>
                         <div>
@@ -174,7 +174,7 @@
                             <p class="mb-0">{{ sport.schedule }}</p>
                         </div>
                     </div>
-                    
+
                     <div class="sport-info-item">
                         <i class="fas fa-map-marker-alt"></i>
                         <div>
@@ -182,21 +182,25 @@
                             <p class="mb-0">{{ sport.location }}</p>
                         </div>
                     </div>
-                    
+
                     <div class="sport-info-item">
                         <i class="fas fa-users"></i>
                         <div class="w-100">
                             <strong>Capacity:</strong>
                             <div class="capacity-bar">
-                                <div class="capacity-progress" style="width: {{ (sport.enrolled / sport.capacity) * 100 }}%;"></div>
+                                {% if sport.capacity %}
+                                    <div class="capacity-progress" style="width: {{ (sport.enrolled / sport.capacity) * 100 }}%;"></div>
+                                {% else %}
+                                    <div class="capacity-progress" style="width: 0%;"></div>
+                                {% endif %}
                             </div>
-                            <p class="mb-0">{{ sport.enrolled }} / {{ sport.capacity }} students enrolled</p>
+                            <p class="mb-0">{{ sport.enrolled }} / {{ sport.capacity|default('Unlimited') }} students enrolled</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="col-lg-4">
             <div class="sport-info-card">
                 <div class="sport-info-header">
@@ -216,7 +220,7 @@
                     {% else %}
                         <p class="text-muted">No fee structures available for this program.</p>
                     {% endif %}
-                    
+
                     <div class="text-center mt-4">
                         <a href="{{ url_for('main.join_sport', sport_id=sport.id) }}" class="btn btn-primary join-btn">
                             <i class="fas fa-user-plus me-2"></i> Join This Program
