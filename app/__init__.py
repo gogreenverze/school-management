@@ -16,8 +16,8 @@ load_dotenv()
 db = SQLAlchemy()
 login_manager = LoginManager()
 mail = Mail()
-admin = Admin(name='School Management System', template_mode='bootstrap4', url='/admin_panel', endpoint='admin_panel')
 migrate = Migrate()
+admin = None  # Will be initialized in create_app
 
 def nl2br(value):
     """Convert newlines to <br> tags."""
@@ -87,10 +87,21 @@ def create_app():
     app.register_blueprint(student_attendance_bp)
     app.register_blueprint(student_invoices_bp)  # Student invoice routes
 
+    # Initialize admin
+    global admin
+    from app.routes.admin_views import SecureAdminIndexView
+    admin = Admin(
+        app,
+        name='School Management System',
+        template_mode='bootstrap4',
+        url='/admin_panel',
+        endpoint='admin_panel',
+        index_view=SecureAdminIndexView()
+    )
+
     # Initialize admin views
     from app.routes.admin_views import init_admin_views
     init_admin_views(admin, db)
-    admin.init_app(app)
 
     # Create database tables
     with app.app_context():

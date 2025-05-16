@@ -124,9 +124,6 @@ class HomeworkModelView(SecureModelView):
     }
 
 def init_admin_views(admin, db):
-    # Override default index view
-    admin.index_view = SecureAdminIndexView()
-
     # Add model views
     admin.add_view(UserModelView(User, db.session, category='Users'))
     admin.add_view(SecureModelView(AdminProfile, db.session, category='Users'))
