@@ -305,68 +305,82 @@ def populate_boards(conn):
     cursor = conn.cursor()
 
     # Check if boards already exist
-    cursor.execute("SELECT COUNT(*) FROM boards")
-    count = cursor.fetchone()[0]
-    if count > 0:
-        print(f"Boards table already has {count} records. Skipping.")
-        return
+    cursor.execute("SELECT code FROM boards")
+    existing_codes = [row[0] for row in cursor.fetchall()]
+
+    if existing_codes:
+        print(f"Boards table already has {len(existing_codes)} records.")
+        print("Adding only new boards...")
 
     # Insert boards
+    added_count = 0
     for board in indian_boards:
-        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        cursor.execute('''
-            INSERT INTO boards (name, code, description, state, is_active, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (board['name'], board['code'], board['description'], board['state'], 1, now, now))
+        if board['code'] not in existing_codes:
+            now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            try:
+                cursor.execute('''
+                    INSERT INTO boards (name, code, description, state, is_active, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                ''', (board['name'], board['code'], board['description'], board['state'], 1, now, now))
+                added_count += 1
+            except sqlite3.IntegrityError:
+                print(f"Skipping duplicate board: {board['name']} ({board['code']})")
 
     conn.commit()
-    print(f"Added {len(indian_boards)} boards to the database.")
+    print(f"Added {added_count} new boards to the database.")
 
 def populate_standards(conn):
     """Populate the standards table with Tamil Nadu standards"""
     print("Populating standards table...")
     cursor = conn.cursor()
 
-    # Check if standards already exist
-    cursor.execute("SELECT COUNT(*) FROM standards")
-    count = cursor.fetchone()[0]
-    if count > 0:
-        print(f"Standards table already has {count} records. Skipping.")
-        return
-
     # Get all board IDs
     cursor.execute("SELECT id FROM boards")
     board_ids = [row[0] for row in cursor.fetchall()]
+
+    # Check existing standards
+    cursor.execute("SELECT name, board_id FROM standards")
+    existing_standards = [(row[0], row[1]) for row in cursor.fetchall()]
+
+    if existing_standards:
+        print(f"Standards table already has {len(existing_standards)} records.")
+        print("Adding only new standards...")
 
     # Insert standards for each board
     standard_count = 0
     for board_id in board_ids:
         for std in tn_standards:
-            now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            cursor.execute('''
-                INSERT INTO standards (name, description, board_id, academic_year, is_active, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            ''', (std['name'], std['description'], board_id, '2023-2024', 1, now, now))
-            standard_count += 1
+            # Check if this standard already exists for this board
+            if (std['name'], board_id) not in existing_standards:
+                now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                try:
+                    cursor.execute('''
+                        INSERT INTO standards (name, description, board_id, academic_year, is_active, created_at, updated_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    ''', (std['name'], std['description'], board_id, '2023-2024', 1, now, now))
+                    standard_count += 1
+                except sqlite3.IntegrityError:
+                    print(f"Skipping duplicate standard: {std['name']} for board ID {board_id}")
 
     conn.commit()
-    print(f"Added {standard_count} standards to the database.")
+    print(f"Added {standard_count} new standards to the database.")
 
 def populate_sections(conn):
     """Populate the sections table"""
     print("Populating sections table...")
     cursor = conn.cursor()
 
-    # Check if sections already exist
-    cursor.execute("SELECT COUNT(*) FROM sections")
-    count = cursor.fetchone()[0]
-    if count > 0:
-        print(f"Sections table already has {count} records. Skipping.")
-        return
-
     # Get all standard IDs
     cursor.execute("SELECT id FROM standards")
     standard_ids = [row[0] for row in cursor.fetchall()]
+
+    # Check existing sections
+    cursor.execute("SELECT name, standard_id FROM sections")
+    existing_sections = [(row[0], row[1]) for row in cursor.fetchall()]
+
+    if existing_sections:
+        print(f"Sections table already has {len(existing_sections)} records.")
+        print("Adding only new sections...")
 
     # Insert sections for each standard
     section_count = 0
@@ -374,15 +388,20 @@ def populate_sections(conn):
         num_sections = random.randint(2, 6)  # Random number of sections between 2 and 6
         for i in range(num_sections):
             if i < len(section_names):
-                now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                cursor.execute('''
-                    INSERT INTO sections (name, standard_id, description, capacity, is_active, created_at, updated_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
-                ''', (section_names[i], standard_id, f"Section {section_names[i]}", random.randint(30, 45), 1, now, now))
-                section_count += 1
+                # Check if this section already exists for this standard
+                if (section_names[i], standard_id) not in existing_sections:
+                    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    try:
+                        cursor.execute('''
+                            INSERT INTO sections (name, standard_id, description, capacity, is_active, created_at, updated_at)
+                            VALUES (?, ?, ?, ?, ?, ?, ?)
+                        ''', (section_names[i], standard_id, f"Section {section_names[i]}", random.randint(30, 45), 1, now, now))
+                        section_count += 1
+                    except sqlite3.IntegrityError:
+                        print(f"Skipping duplicate section: {section_names[i]} for standard ID {standard_id}")
 
     conn.commit()
-    print(f"Added {section_count} sections to the database.")
+    print(f"Added {section_count} new sections to the database.")
 
 def populate_admin_user(conn):
     """Create an admin user if one doesn't exist"""
