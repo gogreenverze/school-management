@@ -180,7 +180,7 @@ def generate_data():
     from app import login_manager, mail, admin, migrate
 
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///school.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/school.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = 'dev-key-for-development'
 
