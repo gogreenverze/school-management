@@ -125,7 +125,7 @@ indian_boards = [
     }
 ]
 
-# Sports data with focus on Karate and Kabaddi
+# Sports data with focus on Karate, Kabaddi, and other popular sports in Tamil Nadu
 sports_data = [
     {
         'name': 'Karate',
@@ -150,6 +150,33 @@ sports_data = [
         'positions': ['Raider', 'Defender', 'All-Rounder']
     },
     {
+        'name': 'Football',
+        'category': 'Team Sport',
+        'description': 'A team sport played with a spherical ball between two teams of 11 players',
+        'fee': 1200,
+        'schedule': 'Mon,Wed,Fri 3:30 PM - 5:00 PM',
+        'location': 'School Football Ground',
+        'instructor': 'Coach'
+    },
+    {
+        'name': 'Kho Kho',
+        'category': 'Team Sport',
+        'description': 'Traditional Indian sport played by two teams of twelve players',
+        'fee': 800,
+        'schedule': 'Tue,Thu 4:00 PM - 5:30 PM',
+        'location': 'School Playground',
+        'instructor': 'Coach'
+    },
+    {
+        'name': 'Hockey',
+        'category': 'Team Sport',
+        'description': 'Team sport played with hockey sticks and a ball',
+        'fee': 1100,
+        'schedule': 'Mon,Wed,Fri 4:30 PM - 6:00 PM',
+        'location': 'School Hockey Field',
+        'instructor': 'Coach'
+    },
+    {
         'name': 'Cricket',
         'category': 'Team Sport',
         'description': 'Popular bat-and-ball game played between two teams',
@@ -168,6 +195,33 @@ sports_data = [
         'instructor': 'Coach'
     },
     {
+        'name': 'Basketball',
+        'category': 'Team Sport',
+        'description': 'Team sport in which two teams of five players score by shooting a ball through a hoop',
+        'fee': 1000,
+        'schedule': 'Tue,Thu,Sat 4:30 PM - 6:00 PM',
+        'location': 'School Basketball Court',
+        'instructor': 'Coach'
+    },
+    {
+        'name': 'Table Tennis',
+        'category': 'Racquet Sport',
+        'description': 'Indoor sport played with small paddles and a lightweight ball on a table',
+        'fee': 900,
+        'schedule': 'Mon,Wed,Fri 3:00 PM - 4:30 PM',
+        'location': 'School Indoor Sports Hall',
+        'instructor': 'Coach'
+    },
+    {
+        'name': 'Badminton',
+        'category': 'Racquet Sport',
+        'description': 'Racquet sport played using racquets to hit a shuttlecock across a net',
+        'fee': 950,
+        'schedule': 'Tue,Thu,Sat 3:00 PM - 4:30 PM',
+        'location': 'School Indoor Sports Hall',
+        'instructor': 'Coach'
+    },
+    {
         'name': 'Silambam',
         'category': 'Martial Arts',
         'description': 'Traditional Tamil martial art which focuses on the bamboo staff as the main weapon',
@@ -175,6 +229,33 @@ sports_data = [
         'schedule': 'Mon,Wed,Fri 3:00 PM - 4:30 PM',
         'location': 'School Martial Arts Hall',
         'instructor': 'Master'
+    },
+    {
+        'name': 'Chess',
+        'category': 'Board Game',
+        'description': 'Two-player strategy board game played on a checkered board',
+        'fee': 700,
+        'schedule': 'Tue,Thu 3:00 PM - 4:30 PM',
+        'location': 'School Indoor Sports Hall',
+        'instructor': 'Coach'
+    },
+    {
+        'name': 'Carrom',
+        'category': 'Board Game',
+        'description': 'Tabletop game of Indian origin played with small disks on a board',
+        'fee': 600,
+        'schedule': 'Mon,Wed 3:00 PM - 4:30 PM',
+        'location': 'School Indoor Sports Hall',
+        'instructor': 'Coach'
+    },
+    {
+        'name': 'Athletics',
+        'category': 'Track and Field',
+        'description': 'Collection of sporting events that involve running, jumping, throwing and walking',
+        'fee': 1000,
+        'schedule': 'Mon,Wed,Fri 6:00 AM - 7:30 AM',
+        'location': 'School Athletic Track',
+        'instructor': 'Coach'
     },
     {
         'name': 'Yoga',
