@@ -150,13 +150,15 @@ def create_homework_assignments(conn, rajkumar_user_id, class_id):
             continue
 
         # Create homework
+        assigned_date = datetime.now().strftime('%Y-%m-%d')
         cursor.execute("""
-            INSERT INTO homeworks (title, description, class_id, due_date, max_score, created_by, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO homeworks (title, description, class_id, assigned_date, due_date, max_score, created_by, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             hw['title'],
             hw['description'],
             class_id,
+            assigned_date,
             hw['due_date'],
             hw['max_score'],
             rajkumar_user_id,

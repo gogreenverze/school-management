@@ -26,7 +26,7 @@
         <div class="row">
             <div class="col-md-6">
                 <p><strong>Class:</strong> {{ homework.class.name }} - {{ homework.class.subject }}</p>
-                <p><strong>Assigned Date:</strong> {{ homework.assigned_date.strftime('%d-%m-%Y') }}</p>
+                <p><strong>Assigned Date:</strong> {% if homework.assigned_date %}{{ homework.assigned_date.strftime('%d-%m-%Y') }}{% else %}Not specified{% endif %}</p>
                 <p><strong>Due Date:</strong> {{ homework.due_date.strftime('%d-%m-%Y') }}</p>
             </div>
             <div class="col-md-6">
