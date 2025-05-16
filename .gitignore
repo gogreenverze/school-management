@@ -31,6 +31,7 @@ instance/
 
 # Virtual Environment
 venv/
+venv_new/
 ENV/
 
 # IDE
@@ -51,3 +52,10 @@ Thumbs.db
 # Logs
 logs/
 *.log
+
+# Temporary files
+*.bak
+*.tmp
+*.old
+*.new
+*.simple
