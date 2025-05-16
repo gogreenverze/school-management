@@ -91,12 +91,24 @@ tamil_female_first_names = [
     'Nirmala', 'Pavithra', 'Ramya', 'Sangeetha', 'Thenmozhi', 'Vanitha'
 ]
 
-# All education boards in India
+# Tamil Nadu specific education boards
 indian_boards = [
     {
         'name': 'Tamil Nadu State Board of School Examination',
         'code': 'TNSBSE',
         'description': 'The official board of education for the state of Tamil Nadu',
+        'state': 'Tamil Nadu'
+    },
+    {
+        'name': 'Samacheer Kalvi',
+        'code': 'SAMACHEER',
+        'description': 'Uniform System of Education in Tamil Nadu',
+        'state': 'Tamil Nadu'
+    },
+    {
+        'name': 'Tamil Nadu Matriculation Board',
+        'code': 'TNMATRIC',
+        'description': 'Matriculation schools in Tamil Nadu',
         'state': 'Tamil Nadu'
     },
     {
@@ -110,174 +122,68 @@ indian_boards = [
         'code': 'ICSE',
         'description': 'Private board of secondary education in India',
         'state': 'All India'
+    }
+]
+
+# Sports data with focus on Karate and Kabaddi
+sports_data = [
+    {
+        'name': 'Karate',
+        'category': 'Martial Arts',
+        'description': 'Traditional Japanese martial art focusing on striking techniques',
+        'fee': 1500,
+        'schedule': 'Mon,Wed,Fri 4:00 PM - 5:30 PM',
+        'location': 'School Martial Arts Hall',
+        'instructor': 'Sensei',
+        'levels': ['White Belt', 'Yellow Belt', 'Orange Belt', 'Green Belt', 'Blue Belt', 'Brown Belt', 'Black Belt'],
+        'age_groups': ['5-8 years', '9-12 years', '13-16 years', '17+ years']
     },
     {
-        'name': 'International Baccalaureate',
-        'code': 'IB',
-        'description': 'International education foundation with programs for students aged 3 to 19',
-        'state': 'International'
+        'name': 'Kabaddi',
+        'category': 'Team Sport',
+        'description': 'Traditional Indian contact team sport',
+        'fee': 1000,
+        'schedule': 'Tue,Thu,Sat 4:00 PM - 5:30 PM',
+        'location': 'School Playground',
+        'instructor': 'Coach',
+        'teams': ['Junior Team', 'Senior Team', 'Girls Team', 'Boys Team'],
+        'positions': ['Raider', 'Defender', 'All-Rounder']
     },
     {
-        'name': 'National Institute of Open Schooling',
-        'code': 'NIOS',
-        'description': 'Board for distance education at school level in India',
-        'state': 'All India'
+        'name': 'Cricket',
+        'category': 'Team Sport',
+        'description': 'Popular bat-and-ball game played between two teams',
+        'fee': 1200,
+        'schedule': 'Mon,Wed,Sat 3:30 PM - 5:30 PM',
+        'location': 'School Cricket Ground',
+        'instructor': 'Coach'
     },
     {
-        'name': 'Andhra Pradesh Board of Secondary Education',
-        'code': 'APBSE',
-        'description': 'State board of education for Andhra Pradesh',
-        'state': 'Andhra Pradesh'
+        'name': 'Volleyball',
+        'category': 'Team Sport',
+        'description': 'Team sport in which two teams of six players are separated by a net',
+        'fee': 800,
+        'schedule': 'Tue,Thu 3:30 PM - 5:00 PM',
+        'location': 'School Volleyball Court',
+        'instructor': 'Coach'
     },
     {
-        'name': 'Assam Board of Secondary Education',
-        'code': 'SEBA',
-        'description': 'State board of education for Assam',
-        'state': 'Assam'
+        'name': 'Silambam',
+        'category': 'Martial Arts',
+        'description': 'Traditional Tamil martial art which focuses on the bamboo staff as the main weapon',
+        'fee': 1300,
+        'schedule': 'Mon,Wed,Fri 3:00 PM - 4:30 PM',
+        'location': 'School Martial Arts Hall',
+        'instructor': 'Master'
     },
     {
-        'name': 'Bihar School Examination Board',
-        'code': 'BSEB',
-        'description': 'State board of education for Bihar',
-        'state': 'Bihar'
-    },
-    {
-        'name': 'Chhattisgarh Board of Secondary Education',
-        'code': 'CGBSE',
-        'description': 'State board of education for Chhattisgarh',
-        'state': 'Chhattisgarh'
-    },
-    {
-        'name': 'Goa Board of Secondary & Higher Secondary Education',
-        'code': 'GBSHSE',
-        'description': 'State board of education for Goa',
-        'state': 'Goa'
-    },
-    {
-        'name': 'Gujarat Secondary and Higher Secondary Education Board',
-        'code': 'GSEB',
-        'description': 'State board of education for Gujarat',
-        'state': 'Gujarat'
-    },
-    {
-        'name': 'Haryana Board of School Education',
-        'code': 'HBSE',
-        'description': 'State board of education for Haryana',
-        'state': 'Haryana'
-    },
-    {
-        'name': 'Himachal Pradesh Board of School Education',
-        'code': 'HPBOSE',
-        'description': 'State board of education for Himachal Pradesh',
-        'state': 'Himachal Pradesh'
-    },
-    {
-        'name': 'Jammu and Kashmir State Board of School Education',
-        'code': 'JKBOSE',
-        'description': 'State board of education for Jammu and Kashmir',
-        'state': 'Jammu and Kashmir'
-    },
-    {
-        'name': 'Jharkhand Academic Council',
-        'code': 'JAC',
-        'description': 'State board of education for Jharkhand',
-        'state': 'Jharkhand'
-    },
-    {
-        'name': 'Karnataka Secondary Education Examination Board',
-        'code': 'KSEEB',
-        'description': 'State board of education for Karnataka',
-        'state': 'Karnataka'
-    },
-    {
-        'name': 'Kerala Board of Public Examinations',
-        'code': 'KBPE',
-        'description': 'State board of education for Kerala',
-        'state': 'Kerala'
-    },
-    {
-        'name': 'Maharashtra State Board of Secondary and Higher Secondary Education',
-        'code': 'MSBSHSE',
-        'description': 'State board of education for Maharashtra',
-        'state': 'Maharashtra'
-    },
-    {
-        'name': 'Manipur Board of Secondary Education',
-        'code': 'BOSEM',
-        'description': 'State board of education for Manipur',
-        'state': 'Manipur'
-    },
-    {
-        'name': 'Meghalaya Board of School Education',
-        'code': 'MBOSE',
-        'description': 'State board of education for Meghalaya',
-        'state': 'Meghalaya'
-    },
-    {
-        'name': 'Mizoram Board of School Education',
-        'code': 'MBSE',
-        'description': 'State board of education for Mizoram',
-        'state': 'Mizoram'
-    },
-    {
-        'name': 'Nagaland Board of School Education',
-        'code': 'NBSE',
-        'description': 'State board of education for Nagaland',
-        'state': 'Nagaland'
-    },
-    {
-        'name': 'Odisha Board of Secondary Education',
-        'code': 'BSE',
-        'description': 'State board of education for Odisha',
-        'state': 'Odisha'
-    },
-    {
-        'name': 'Punjab School Education Board',
-        'code': 'PSEB',
-        'description': 'State board of education for Punjab',
-        'state': 'Punjab'
-    },
-    {
-        'name': 'Rajasthan Board of Secondary Education',
-        'code': 'RBSE',
-        'description': 'State board of education for Rajasthan',
-        'state': 'Rajasthan'
-    },
-    {
-        'name': 'Sikkim State Human Resource Development Department',
-        'code': 'HRDD',
-        'description': 'State board of education for Sikkim',
-        'state': 'Sikkim'
-    },
-    {
-        'name': 'Telangana Board of Secondary Education',
-        'code': 'TBSE',
-        'description': 'State board of education for Telangana',
-        'state': 'Telangana'
-    },
-    {
-        'name': 'Tripura Board of Secondary Education',
-        'code': 'TBSE',
-        'description': 'State board of education for Tripura',
-        'state': 'Tripura'
-    },
-    {
-        'name': 'Uttar Pradesh Board of High School and Intermediate Education',
-        'code': 'UPMSP',
-        'description': 'State board of education for Uttar Pradesh',
-        'state': 'Uttar Pradesh'
-    },
-    {
-        'name': 'Uttarakhand Board of School Education',
-        'code': 'UBSE',
-        'description': 'State board of education for Uttarakhand',
-        'state': 'Uttarakhand'
-    },
-    {
-        'name': 'West Bengal Board of Secondary Education',
-        'code': 'WBBSE',
-        'description': 'State board of education for West Bengal',
-        'state': 'West Bengal'
+        'name': 'Yoga',
+        'category': 'Fitness',
+        'description': 'Group of physical, mental, and spiritual practices or disciplines',
+        'fee': 900,
+        'schedule': 'Tue,Thu,Sat 7:00 AM - 8:00 AM',
+        'location': 'School Yoga Hall',
+        'instructor': 'Guru'
     }
 ]
 
@@ -437,6 +343,137 @@ def populate_admin_user(conn):
     print("Username: admin")
     print("Password: admin123")
 
+def populate_sports(conn):
+    """Populate the sports table with sports data, focusing on Karate and Kabaddi"""
+    print("Populating sports table...")
+    cursor = conn.cursor()
+
+    # Check if sports already exist
+    cursor.execute("SELECT name FROM sports")
+    existing_sports = [row[0] for row in cursor.fetchall()]
+
+    if existing_sports:
+        print(f"Sports table already has {len(existing_sports)} records.")
+        print("Adding only new sports...")
+
+    # Get teacher IDs for instructors
+    cursor.execute("SELECT id FROM teacher_profiles LIMIT 10")
+    teacher_ids = [row[0] for row in cursor.fetchall()]
+
+    if not teacher_ids:
+        print("No teachers found. Please populate teachers first.")
+        return
+
+    # Insert sports
+    added_count = 0
+    for sport in sports_data:
+        if sport['name'] not in existing_sports:
+            now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            instructor_id = random.choice(teacher_ids)
+
+            try:
+                cursor.execute('''
+                    INSERT INTO sports (name, category, instructor_id, schedule, location, description)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ''', (
+                    sport['name'],
+                    sport['category'],
+                    instructor_id,
+                    sport['schedule'],
+                    sport['location'],
+                    sport['description']
+                ))
+                added_count += 1
+
+                # Get the sport ID
+                sport_id = cursor.lastrowid
+
+                # Add sport fee
+                cursor.execute('''
+                    INSERT INTO sport_fees (sport_id, fee_amount, fee_description, is_active, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ''', (
+                    sport_id,
+                    sport['fee'],
+                    f"Monthly fee for {sport['name']}",
+                    1,
+                    now,
+                    now
+                ))
+
+            except sqlite3.IntegrityError:
+                print(f"Skipping duplicate sport: {sport['name']}")
+
+    conn.commit()
+    print(f"Added {added_count} new sports to the database.")
+
+def populate_parents(conn, num_parents=150):
+    """Populate the parents table with Tamil parents"""
+    print(f"Populating parents table with {num_parents} parents...")
+    cursor = conn.cursor()
+
+    # Check if parents already exist
+    cursor.execute("SELECT COUNT(*) FROM users WHERE role = 'parent'")
+    count = cursor.fetchone()[0]
+    if count > 0:
+        print(f"Parents table already has {count} records. Skipping.")
+        return
+
+    # Tamil occupations
+    occupations = [
+        'Teacher', 'Engineer', 'Doctor', 'Lawyer', 'Business Owner',
+        'Government Employee', 'Farmer', 'Shopkeeper', 'Driver', 'Technician',
+        'Accountant', 'Banker', 'Police Officer', 'Military Personnel', 'Nurse',
+        'Software Developer', 'Professor', 'Electrician', 'Plumber', 'Carpenter',
+        'Chef', 'Tailor', 'Fisherman', 'Temple Priest', 'Textile Worker'
+    ]
+
+    # Create parents
+    for i in range(num_parents):
+        gender = random.choice(['male', 'female'])
+        if gender == 'male':
+            first_name = random.choice(tamil_male_first_names)
+            relation = 'Father'
+        else:
+            first_name = random.choice(tamil_female_first_names)
+            relation = 'Mother'
+
+        last_name = random.choice(tamil_surnames)
+        username = f"parent{i+1}"
+        email = f"{username}@gmail.com"
+
+        # Create user
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        password_hash = generate_password_hash('parent123')
+
+        cursor.execute('''
+            INSERT INTO users (username, email, password_hash, first_name, last_name, role, is_active, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (username, email, password_hash, first_name, last_name, 'parent', 1, now))
+
+        parent_id = cursor.lastrowid
+
+        # Create parent profile
+        cursor.execute('''
+            INSERT INTO parent_profiles (user_id, phone, alternate_phone, occupation, annual_income,
+                address, relation_to_student, emergency_contact, is_active)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            parent_id,
+            f"+91 {random.randint(6000000000, 9999999999)}",
+            f"+91 {random.randint(6000000000, 9999999999)}",
+            random.choice(occupations),
+            random.randint(200000, 2000000),
+            f"{random.randint(1, 100)}, {random.choice(['Main Road', 'Cross Street', 'Temple Street', 'Gandhi Road', 'Nehru Street'])}, {random.choice(tn_districts)}",
+            relation,
+            f"+91 {random.randint(6000000000, 9999999999)}",
+            1
+        ))
+
+    conn.commit()
+    print(f"Added {num_parents} parents to the database.")
+    print("Default parent login: username: parent1, password: parent123")
+
 def populate_teachers(conn, num_teachers=100):
     """Populate the teachers table with Tamil teachers"""
     print(f"Populating teachers table with {num_teachers} teachers...")
@@ -548,6 +585,18 @@ def populate_students(conn, num_students=200):
     cursor.execute("SELECT id, standard_id FROM sections")
     sections = cursor.fetchall()
 
+    # Get all parent IDs
+    cursor.execute("SELECT id FROM parent_profiles")
+    parent_ids = [row[0] for row in cursor.fetchall()]
+
+    if not parent_ids:
+        print("No parents found. Please populate parents first.")
+        return
+
+    # Get all sports
+    cursor.execute("SELECT id, name FROM sports")
+    sports = cursor.fetchall()
+
     # Blood groups
     blood_groups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
 
@@ -577,12 +626,15 @@ def populate_students(conn, num_students=200):
         # Assign to a random section
         section_id, standard_id = random.choice(sections)
 
+        # Assign to a random parent
+        parent_id = random.choice(parent_ids)
+
         # Create student profile
         cursor.execute('''
             INSERT INTO student_profiles (user_id, roll_number, date_of_birth, standard_id, section_id,
-                admission_date, blood_group, address, emergency_contact, medical_conditions,
+                admission_date, parent_id, blood_group, address, emergency_contact, medical_conditions,
                 previous_school, academic_year, is_active)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             student_id,
             f"STU{1000+i:04d}",
@@ -590,6 +642,7 @@ def populate_students(conn, num_students=200):
             standard_id,
             section_id,
             generate_random_date(2018, 2023).strftime('%Y-%m-%d'),
+            parent_id,
             random.choice(blood_groups),
             f"{random.randint(1, 100)}, {random.choice(['Main Road', 'Cross Street', 'Temple Street', 'Gandhi Road', 'Nehru Street'])}, {random.choice(tn_districts)}",
             f"+91 {random.randint(6000000000, 9999999999)}",
@@ -598,6 +651,69 @@ def populate_students(conn, num_students=200):
             '2023-2024',
             1
         ))
+
+        # Enroll some students in sports (about 40% chance)
+        if random.random() < 0.4 and sports:
+            # Choose 1-2 sports for the student
+            num_sports = random.randint(1, min(2, len(sports)))
+            chosen_sports = random.sample(sports, num_sports)
+
+            for sport_id, sport_name in chosen_sports:
+                try:
+                    # Add student to sport
+                    cursor.execute('''
+                        INSERT INTO sport_students (sport_id, student_id, join_date, status, created_at, updated_at)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                    ''', (
+                        sport_id,
+                        student_id,
+                        generate_random_date(2023, 2024).strftime('%Y-%m-%d'),
+                        'Active',
+                        now,
+                        now
+                    ))
+
+                    # Get sport fee
+                    cursor.execute("SELECT id, fee_amount FROM sport_fees WHERE sport_id = ?", (sport_id,))
+                    fee_data = cursor.fetchone()
+
+                    if fee_data:
+                        fee_id, fee_amount = fee_data
+
+                        # Create fee schedule for the student
+                        for month in range(1, 13):  # 12 months
+                            due_date = date(2024, month, 10).strftime('%Y-%m-%d')
+                            cursor.execute('''
+                                INSERT INTO sport_fee_schedules (sport_fee_id, student_id, due_date, amount, status, created_at, updated_at)
+                                VALUES (?, ?, ?, ?, ?, ?, ?)
+                            ''', (
+                                fee_id,
+                                student_id,
+                                due_date,
+                                fee_amount,
+                                'Pending' if month > 5 else 'Paid',  # First 5 months paid
+                                now,
+                                now
+                            ))
+
+                            # Add payment for paid months
+                            if month <= 5:
+                                payment_date = date(2024, month, random.randint(1, 10)).strftime('%Y-%m-%d')
+                                cursor.execute('''
+                                    INSERT INTO sport_fee_payments (student_id, sport_fee_id, amount, payment_date, payment_method, created_at, updated_at)
+                                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                                ''', (
+                                    student_id,
+                                    fee_id,
+                                    fee_amount,
+                                    payment_date,
+                                    random.choice(['Cash', 'Online Transfer', 'Cheque']),
+                                    now,
+                                    now
+                                ))
+
+                except sqlite3.IntegrityError:
+                    print(f"Error enrolling student {student_id} in sport {sport_id}")
 
     conn.commit()
     print(f"Added {num_students} students to the database.")
@@ -611,15 +727,37 @@ def main():
         return
 
     try:
-        # Populate the database tables
+        # Populate the database tables in the correct order
+        print("\n=== Step 1: Populating boards ===")
         populate_boards(conn)
+
+        print("\n=== Step 2: Populating standards ===")
         populate_standards(conn)
+
+        print("\n=== Step 3: Populating sections ===")
         populate_sections(conn)
+
+        print("\n=== Step 4: Creating admin user ===")
         populate_admin_user(conn)
+
+        print("\n=== Step 5: Populating teachers ===")
         populate_teachers(conn, 100)  # Generate 100 teachers
+
+        print("\n=== Step 6: Populating sports ===")
+        populate_sports(conn)  # Add sports with focus on Karate and Kabaddi
+
+        print("\n=== Step 7: Populating parents ===")
+        populate_parents(conn, 150)  # Generate 150 parents
+
+        print("\n=== Step 8: Populating students ===")
         populate_students(conn, 200)  # Generate 200 students
 
-        print("Database populated successfully!")
+        print("\n=== Database population completed successfully! ===")
+        print("\nLogin credentials:")
+        print("Admin: username: admin, password: admin123")
+        print("Teacher: username: teacher1, password: teacher123")
+        print("Parent: username: parent1, password: parent123")
+        print("Student: username: student1, password: student123")
     except sqlite3.Error as e:
         print(f"Error populating database: {e}")
     finally:
