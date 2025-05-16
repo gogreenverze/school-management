@@ -9,25 +9,22 @@ from app import create_app
 def create_database_schema():
     """Create the database schema directly using SQL"""
     print("Creating database schema...")
-    
+
     # Get the database file path
     app = create_app()
     db_path = app.config['SQLALCHEMY_DATABASE_URI'].replace('sqlite:///', '')
-    
-    # Remove the database file if it exists
+
+    # Check if the database file exists
     if os.path.exists(db_path):
-        try:
-            os.remove(db_path)
-            print(f"Removed existing database file: {db_path}")
-        except Exception as e:
-            print(f"Error removing database file: {e}")
-            return False
-    
+        print(f"Database file already exists: {db_path}")
+        print("Using existing database to preserve data.")
+        return True
+
     # Create a new database and tables
     try:
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
-        
+
         # Create tables
         cursor.executescript('''
         -- Create boards table
@@ -41,7 +38,7 @@ def create_database_schema():
             created_at DATETIME,
             updated_at DATETIME
         );
-        
+
         -- Create standards table
         CREATE TABLE standards (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,7 +52,7 @@ def create_database_schema():
             FOREIGN KEY (board_id) REFERENCES boards(id),
             UNIQUE (name, board_id)
         );
-        
+
         -- Create sections table
         CREATE TABLE sections (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -69,7 +66,7 @@ def create_database_schema():
             FOREIGN KEY (standard_id) REFERENCES standards(id),
             UNIQUE (name, standard_id)
         );
-        
+
         -- Create users table
         CREATE TABLE users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -83,7 +80,7 @@ def create_database_schema():
             created_at DATETIME,
             last_login DATETIME
         );
-        
+
         -- Create admin_profiles table
         CREATE TABLE admin_profiles (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -92,7 +89,7 @@ def create_database_schema():
             phone VARCHAR(20),
             FOREIGN KEY (user_id) REFERENCES users(id)
         );
-        
+
         -- Create teacher_profiles table
         CREATE TABLE teacher_profiles (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -112,7 +109,7 @@ def create_database_schema():
             is_active BOOLEAN DEFAULT 1,
             FOREIGN KEY (user_id) REFERENCES users(id)
         );
-        
+
         -- Create parent_profiles table
         CREATE TABLE parent_profiles (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -127,7 +124,7 @@ def create_database_schema():
             is_active BOOLEAN DEFAULT 1,
             FOREIGN KEY (user_id) REFERENCES users(id)
         );
-        
+
         -- Create student_profiles table
         CREATE TABLE student_profiles (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -150,7 +147,7 @@ def create_database_schema():
             FOREIGN KEY (section_id) REFERENCES sections(id),
             FOREIGN KEY (parent_id) REFERENCES parent_profiles(id)
         );
-        
+
         -- Create classes table
         CREATE TABLE classes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -169,7 +166,7 @@ def create_database_schema():
             FOREIGN KEY (section_id) REFERENCES sections(id),
             FOREIGN KEY (teacher_id) REFERENCES teacher_profiles(id)
         );
-        
+
         -- Create sports table
         CREATE TABLE sports (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -182,10 +179,10 @@ def create_database_schema():
             FOREIGN KEY (instructor_id) REFERENCES teacher_profiles(id)
         );
         ''')
-        
+
         conn.commit()
         conn.close()
-        
+
         print("Database schema created successfully")
         return True
     except Exception as e:
