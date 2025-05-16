@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{{ sport.name }}</h1>
+    <div>
+        <a href="{{ url_for('admin.sport_list') }}" class="btn btn-secondary me-2">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+        <a href="{{ url_for('admin.sport_edit', id=sport.id) }}" class="btn btn-warning">
+            <i class="fas fa-edit"></i> Edit
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Sport Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table">
+                            <tr>
+                                <th>Name:</th>
+                                <td>{{ sport.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Category:</th>
+                                <td>{{ sport.category }}</td>
+                            </tr>
+                            <tr>
+                                <th>Instructor:</th>
+                                <td>{{ sport.instructor.user.first_name }} {{ sport.instructor.user.last_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Schedule:</th>
+                                <td>{{ sport.schedule }}</td>
+                            </tr>
+                            <tr>
+                                <th>Location:</th>
+                                <td>{{ sport.location }}</td>
+                            </tr>
+                            <tr>
+                                <th>Capacity:</th>
+                                <td>{{ sport.capacity }}</td>
+                            </tr>
+                            <tr>
+                                <th>Status:</th>
+                                <td>
+                                    {% if sport.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        {% if sport.image %}
+                        <img src="{{ sport.image }}" alt="{{ sport.name }}" class="img-fluid rounded mb-3" style="max-height: 200px;">
+                        {% endif %}
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">Description</h6>
+                            </div>
+                            <div class="card-body">
+                                {% if sport.description %}
+                                    {{ sport.description }}
+                                {% else %}
+                                    <em>No description available</em>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Fee Structures</h5>
+                <a href="{{ url_for('admin.sport_fee_list', sport_id=sport.id) }}" class="btn btn-sm btn-light">
+                    <i class="fas fa-money-bill"></i> Manage Fees
+                </a>
+            </div>
+            <div class="card-body">
+                {% if fees %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Amount</th>
+                                <th>Frequency</th>
+                                <th>Duration</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fee in fees %}
+                            <tr>
+                                <td>{{ fee.name }}</td>
+                                <td>₹{{ fee.amount }}</td>
+                                <td>{{ fee.frequency|capitalize }}</td>
+                                <td>{{ fee.duration if fee.duration else 'Ongoing' }}</td>
+                                <td>
+                                    {% if fee.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> No fee structures defined for this sport.
+                    <a href="{{ url_for('admin.sport_fee_create', sport_id=sport.id) }}">Add a fee structure</a>.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Enrolled Students</h5>
+                <a href="{{ url_for('admin.sport_students', sport_id=sport.id) }}" class="btn btn-sm btn-light">
+                    <i class="fas fa-user-graduate"></i> Manage Students
+                </a>
+            </div>
+            <div class="card-body">
+                {% if students %}
+                <div class="list-group">
+                    {% for student in students %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">{{ student.user.first_name }} {{ student.user.last_name }}</h6>
+                                <small class="text-muted">Roll No: {{ student.roll_number }}</small>
+                            </div>
+                            <a href="{{ url_for('admin.student_edit', id=student.id) }}" class="btn btn-sm btn-info">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if students|length >= sport.capacity %}
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i> Maximum capacity reached ({{ sport.capacity }} students).
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> No students enrolled in this sport.
+                    <a href="{{ url_for('admin.sport_students', sport_id=sport.id) }}">Enroll students</a>.
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-footer text-muted">
+                <strong>{{ students|length }}</strong> out of <strong>{{ sport.capacity }}</strong> spots filled
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('admin.sport_fee_create', sport_id=sport.id) }}" class="btn btn-outline-primary">
+                        <i class="fas fa-plus-circle me-2"></i> Add Fee Structure
+                    </a>
+                    <a href="{{ url_for('admin.sport_students', sport_id=sport.id) }}" class="btn btn-outline-success">
+                        <i class="fas fa-user-plus me-2"></i> Enroll Students
+                    </a>
+                    <a href="{{ url_for('admin.sport_edit', id=sport.id) }}" class="btn btn-outline-warning">
+                        <i class="fas fa-edit me-2"></i> Edit Sport
+                    </a>
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteSportModal">
+                        <i class="fas fa-trash me-2"></i> Delete Sport
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteSportModal" tabindex="-1" aria-labelledby="deleteSportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteSportModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete the sport <strong>{{ sport.name }}</strong>?
+                <p class="text-danger mt-2">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ url_for('admin.sport_delete', id=sport.id) }}" method="post">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

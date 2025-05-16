@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block title %}Sports Programs - School Management System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1517649763962-0c623066013b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+    <div class="hero-content">
+        <h1 class="hero-title">Unleash Your Athletic Potential</h1>
+        <p class="hero-subtitle">Join our award-winning sports programs and discover the champion within you</p>
+        <a href="#sports-programs" class="hero-btn">Explore Programs</a>
+    </div>
+</div>
+
+<div class="row" id="sports-programs">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h1 class="card-title">Our Sports Programs</h1>
+                <p class="lead">Discover our diverse range of sports and physical activities designed to promote health, teamwork, and personal growth.</p>
+            </div>
+        </div>
+
+        <div class="row">
+            {% for sport in sports %}
+                <div class="col-md-6">
+                    <div class="sport-card card">
+                        <img src="{{ sport.image }}" class="card-img-top" alt="{{ sport.name }}">
+                        <div class="sport-icon">
+                            <i class="{{ sport.icon }}"></i>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ sport.name }}</h5>
+                            <p class="card-text">{{ sport.description }}</p>
+
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-user-tie me-2 text-primary"></i>
+                                <span><strong>Coach:</strong> {{ sport.coach }}</span>
+                            </div>
+
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                                <span><strong>Schedule:</strong> {{ sport.schedule }}</span>
+                            </div>
+
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                <span><strong>Location:</strong> {{ sport.location }}</span>
+                            </div>
+
+                            {% if sport.fees %}
+                            <div class="mb-3">
+                                <h6 class="mb-2"><i class="fas fa-rupee-sign me-2 text-primary"></i> <strong>Fee Structures:</strong></h6>
+                                <div class="fee-options">
+                                    {% for fee in sport.fees %}
+                                    <div class="fee-option p-2 mb-2 border rounded">
+                                        <div class="d-flex justify-content-between">
+                                            <span><strong>{{ fee.name }}</strong></span>
+                                            <span class="text-primary">₹{{ fee.amount }} <small>({{ fee.frequency }})</small></span>
+                                        </div>
+                                        {% if fee.description %}
+                                        <small class="text-muted">{{ fee.description }}</small>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <div class="d-flex">
+                                <a href="{{ url_for('main.sport_detail', sport_id=sport.id) }}" class="btn btn-outline-primary me-2">View Details</a>
+                                <a href="{{ url_for('main.join_sport', sport_id=sport.id) }}" class="btn btn-primary">Join Program</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if loop.index is divisibleby(2) %}
+                    </div><div class="row mt-4">
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Login</h5>
+            </div>
+            <div class="card-body">
+                {% if current_user.is_authenticated %}
+                    <p>You are logged in as <strong>{{ current_user.username }}</strong>.</p>
+                    <p>Role: <strong>{{ current_user.role|capitalize }}</strong></p>
+
+                    <a href="{{ url_for('auth.profile') }}" class="btn btn-primary btn-block w-100 mb-2">
+                        <i class="fas fa-user"></i> View Profile
+                    </a>
+
+                    {% if current_user.is_admin() %}
+                        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary btn-block w-100">
+                            <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+                        </a>
+                    {% elif current_user.is_teacher() %}
+                        <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-secondary btn-block w-100">
+                            <i class="fas fa-chalkboard-teacher"></i> Go to Dashboard
+                        </a>
+                    {% elif current_user.is_parent() %}
+                        <a href="{{ url_for('parent.dashboard') }}" class="btn btn-secondary btn-block w-100">
+                            <i class="fas fa-users"></i> Go to Dashboard
+                        </a>
+                    {% elif current_user.is_student() %}
+                        <a href="{{ url_for('student.dashboard') }}" class="btn btn-secondary btn-block w-100">
+                            <i class="fas fa-user-graduate"></i> Go to Dashboard
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <form method="POST" action="{{ url_for('auth.login') }}">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
+                            <label class="form-check-label" for="remember_me">Remember Me</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Sign In</button>
+                    </form>
+                    <div class="mt-3 text-center">
+                        <a href="{{ url_for('auth.reset_password_request') }}">Forgot Password?</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Benefits of Sports</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <i class="fas fa-heart text-primary me-2"></i> Improved physical health
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-brain text-primary me-2"></i> Enhanced cognitive function
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-users text-primary me-2"></i> Teamwork and social skills
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-trophy text-primary me-2"></i> Goal setting and achievement
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-smile text-primary me-2"></i> Stress reduction and mental wellbeing
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Upcoming Events</h5>
+            </div>
+            <div class="card-body">
+                <div class="event mb-3">
+                    <h6>Annual Sports Day</h6>
+                    <p class="text-muted mb-1"><i class="fas fa-calendar-alt"></i> July 15, 2023</p>
+                    <p class="mb-0">A day of competitive sports and fun activities for all students.</p>
+                </div>
+                <hr>
+                <div class="event">
+                    <h6>Inter-School Basketball Tournament</h6>
+                    <p class="text-muted mb-1"><i class="fas fa-calendar-alt"></i> August 5-7, 2023</p>
+                    <p class="mb-0">Our school basketball team will compete against other schools in the region.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}User Management - School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>User Management</h1>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary mb-2">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    <a href="#" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add New User
+    </a>
+</div>
+
+{% include 'admin/partials/view_toggle.html' %}
+
+<div class="card">
+    <div class="card-body">
+        <!-- List View -->
+        <div class="list-view">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Last Login</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                            <tr>
+                                <td>{{ user.username }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.get_full_name() }}</td>
+                                <td>{{ user.role|capitalize }}</td>
+                                <td>
+                                    {% if user.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login else 'Never' }}</td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ user.id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center">No users found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Card View -->
+        <div class="card-view" style="display: none;">
+            <div class="desktop-card-container">
+                {% for user in users %}
+                    <div class="desktop-card">
+                        <div class="desktop-card-title">{{ user.get_full_name() }}</div>
+                        <div class="desktop-card-content">
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Username</span>
+                                <span class="desktop-field-value">{{ user.username }}</span>
+                            </div>
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Email</span>
+                                <span class="desktop-field-value">{{ user.email }}</span>
+                            </div>
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Role</span>
+                                <span class="desktop-field-value">{{ user.role|capitalize }}</span>
+                            </div>
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Status</span>
+                                <span class="desktop-field-value">
+                                    {% if user.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Last Login</span>
+                                <span class="desktop-field-value">{{ user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login else 'Never' }}</span>
+                            </div>
+                        </div>
+                        <div class="desktop-card-actions">
+                            <a href="#" class="desktop-card-action-btn">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <button type="button" class="desktop-card-action-btn" data-bs-toggle="modal" data-bs-target="#deleteModal{{ user.id }}">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">No users found.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Pagination Container -->
+        <div class="pagination-container mt-4"></div>
+    </div>
+</div>
+
+<!-- Delete Modals -->
+{% for user in users %}
+    <div class="modal fade" id="deleteModal{{ user.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ user.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel{{ user.id }}">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete the user "{{ user.username }}"?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="#" method="POST">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+{% endblock %}

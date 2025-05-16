@@ -1,0 +1,293 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Invoice #{{ invoice.invoice_number }} - School Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <h1 class="h3 mb-3 mb-md-0">Invoice #{{ invoice.invoice_number }}</h1>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ url_for('admin_invoices.edit', id=invoice.id) }}" class="btn btn-primary">
+                <i class="fas fa-edit"></i> Edit Invoice
+            </a>
+            {% if invoice.pdf_path %}
+            <a href="{{ url_for('admin_invoices.download_pdf', id=invoice.id) }}" class="btn btn-secondary">
+                <i class="fas fa-download"></i> Download PDF
+            </a>
+            {% else %}
+            <a href="{{ url_for('admin_invoices.generate_pdf', id=invoice.id) }}" class="btn btn-warning">
+                <i class="fas fa-file-pdf"></i> Generate PDF
+            </a>
+            {% endif %}
+            <a href="{{ url_for('admin_invoices.list') }}" class="btn btn-outline-primary">
+                <i class="fas fa-list"></i> Back to Invoices
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 order-2 order-md-1">
+            <!-- Invoice Details -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Invoice Details</h6>
+                    <span class="badge
+                        {% if invoice.status == 'draft' %}bg-secondary
+                        {% elif invoice.status == 'sent' %}bg-primary
+                        {% elif invoice.status == 'paid' %}bg-success
+                        {% elif invoice.status == 'partially_paid' %}bg-info
+                        {% elif invoice.status == 'overdue' %}bg-danger
+                        {% elif invoice.status == 'cancelled' %}bg-dark
+                        {% endif %}">
+                        {{ invoice.status|replace('_', ' ')|title }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Student Information</h5>
+                            {% if student and student.user %}
+                            <table class="table table-sm">
+                                <tr>
+                                    <th width="40%">Name:</th>
+                                    <td>{{ student.user.first_name }} {{ student.user.last_name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Roll Number:</th>
+                                    <td>{{ student.roll_number }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Standard:</th>
+                                    <td>{% if student.standard %}{{ student.standard.name }}{% else %}Not assigned{% endif %}</td>
+                                </tr>
+                                <tr>
+                                    <th>Section:</th>
+                                    <td>{% if student.section %}{{ student.section.name }}{% else %}Not assigned{% endif %}</td>
+                                </tr>
+                                {% if student.parent_profile %}
+                                <tr>
+                                    <th>Parent:</th>
+                                    <td>{% if student.parent_profile.user %}{{ student.parent_profile.user.first_name }} {{ student.parent_profile.user.last_name }}{% else %}Unknown{% endif %}</td>
+                                </tr>
+                                <tr>
+                                    <th>Contact:</th>
+                                    <td>{{ student.parent_profile.phone }}</td>
+                                </tr>
+                                {% endif %}
+                            </table>
+                            {% else %}
+                            <div class="alert alert-warning">
+                                Student information not available
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Invoice Information</h5>
+                            <table class="table table-sm">
+                                <tr>
+                                    <th width="40%">Invoice Number:</th>
+                                    <td>{{ invoice.invoice_number }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Invoice Date:</th>
+                                    <td>{{ invoice.invoice_date.strftime('%d-%m-%Y') }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Due Date:</th>
+                                    <td>{{ invoice.due_date.strftime('%d-%m-%Y') }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Invoice Type:</th>
+                                    <td>{{ invoice.invoice_type|replace('_', ' ')|title }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Academic Year:</th>
+                                    <td>{{ invoice.academic_year }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Created By:</th>
+                                    <td>{% if invoice.creator %}{{ invoice.creator.first_name }} {{ invoice.creator.last_name }}{% else %}System{% endif %}</td>
+                                </tr>
+                                <tr>
+                                    <th>Created On:</th>
+                                    <td>{{ invoice.created_at.strftime('%d-%m-%Y %H:%M') }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <h5>Payment Summary</h5>
+                            <table class="table table-sm">
+                                <tr>
+                                    <th width="20%">Subtotal:</th>
+                                    <td>₹{{ "%.2f"|format(invoice.subtotal) }}</td>
+                                </tr>
+                                {% if invoice.discount > 0 %}
+                                <tr>
+                                    <th>Discount:</th>
+                                    <td>₹{{ "%.2f"|format(invoice.discount) }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if invoice.tax > 0 %}
+                                <tr>
+                                    <th>Tax:</th>
+                                    <td>₹{{ "%.2f"|format(invoice.tax) }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if invoice.late_fee > 0 %}
+                                <tr>
+                                    <th>Late Fee:</th>
+                                    <td>₹{{ "%.2f"|format(invoice.late_fee) }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr class="table-primary">
+                                    <th>Total Amount:</th>
+                                    <td><strong>₹{{ "%.2f"|format(invoice.total_amount) }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>Amount Paid:</th>
+                                    <td>₹{{ "%.2f"|format(invoice.amount_paid) }}</td>
+                                </tr>
+                                <tr class="{% if invoice.balance > 0 %}table-danger{% else %}table-success{% endif %}">
+                                    <th>Balance Due:</th>
+                                    <td><strong>₹{{ "%.2f"|format(invoice.balance) }}</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    {% if invoice.notes %}
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <h5>Notes</h5>
+                            <div class="p-3 bg-light rounded">
+                                {{ invoice.notes|nl2br }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if invoice.terms %}
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <h5>Terms and Conditions</h5>
+                            <div class="p-3 bg-light rounded">
+                                {{ invoice.terms|nl2br }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Invoice Items -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Invoice Items</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Description</th>
+                                    <th>Quantity</th>
+                                    <th>Unit Price</th>
+                                    <th>Discount</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in items %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td>
+                                        {{ item.description }}
+                                        {% if item.fee_type == 'sports' and item.sport %}
+                                            <span class="badge bg-info">{{ item.sport.name }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>₹{{ "%.2f"|format(item.unit_price) }}</td>
+                                    <td>₹{{ "%.2f"|format(item.discount) }}</td>
+                                    <td>₹{{ "%.2f"|format(item.total) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="5" class="text-end">Subtotal:</th>
+                                    <th>₹{{ "%.2f"|format(invoice.subtotal) }}</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 order-1 order-md-2 mb-4 mb-md-0">
+            <!-- Status Update -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Update Status</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{ url_for('admin_invoices.update_status', id=invoice.id) }}">
+                        {{ status_form.csrf_token }}
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            {{ status_form.status(class="form-select form-select-mobile") }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Status Notes</label>
+                            {{ status_form.notes(class="form-control form-control-mobile", rows=3) }}
+                        </div>
+                        <div class="d-grid mt-4">
+                            {{ status_form.submit(class="btn btn-primary btn-lg-mobile") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Payment History -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Payment History</h6>
+                </div>
+                <div class="card-body">
+                    {% if payments %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in payments %}
+                                <tr>
+                                    <td>{{ payment.payment_date.strftime('%d-%m-%Y') }}</td>
+                                    <td>₹{{ "%.2f"|format(payment.amount) }}</td>
+                                    <td>{{ payment.payment_type|replace('_', ' ')|title }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        No payments recorded for this invoice.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

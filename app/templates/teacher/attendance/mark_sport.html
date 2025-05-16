@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - School Management System{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/attendance_mobile.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Mark Sports Attendance</h1>
+        <h4 class="text-muted">{{ sport.name }} - {{ sport.category }}</h4>
+        <div class="mt-2">
+            <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-secondary me-2">
+                <i class="fas fa-home"></i> Back to Dashboard
+            </a>
+            <a href="{{ url_for('teacher_attendance.sports_list') }}" class="btn btn-info">
+                <i class="fas fa-arrow-left"></i> Back to Sports
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Student Attendance</h5>
+        <span class="badge bg-primary">{{ today.strftime('%d-%m-%Y') }}</span>
+    </div>
+    <div class="card-body">
+        {% if students %}
+            <form method="post">
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group mb-3">
+                    {{ form.date.label(class="form-label") }}
+                    {{ form.date(class="form-control" + (" is-invalid" if form.date.errors else ""), type="date") }}
+                    {% for error in form.date.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                
+                <div class="mb-3 mark-all-buttons">
+                    <div class="btn-group w-100">
+                        <button type="button" class="btn btn-success mark-all" data-status="present">
+                            <i class="fas fa-check"></i> Mark All Present
+                        </button>
+                        <button type="button" class="btn btn-danger mark-all" data-status="absent">
+                            <i class="fas fa-times"></i> Mark All Absent
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover attendance-table">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Roll No</th>
+                                <th>Student Name</th>
+                                <th>Status</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in range(form.entries|length) %}
+                                <tr>
+                                    {% set entry = form.entries[i] %}
+                                    {{ entry.student_id() }}
+                                    {{ entry.student_name() }}
+                                    <td>{{ students[i].roll_number }}</td>
+                                    <td>{{ students[i].user.first_name }} {{ students[i].user.last_name }}</td>
+                                    <td>
+                                        {{ entry.status(class="form-select status-select") }}
+                                    </td>
+                                    <td>
+                                        {{ entry.remarks(class="form-control", placeholder="Optional remarks") }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3 attendance-buttons">
+                    <a href="{{ url_for('teacher_attendance.sports_list') }}" class="btn btn-secondary me-md-2">Cancel</a>
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> No students found in this sport.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mark all buttons
+        const markAllButtons = document.querySelectorAll('.mark-all');
+        markAllButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const status = this.getAttribute('data-status');
+                const statusSelects = document.querySelectorAll('.status-select');
+                statusSelects.forEach(select => {
+                    select.value = status;
+                });
+            });
+        });
+        
+        // Change row color based on status
+        const statusSelects = document.querySelectorAll('.status-select');
+        statusSelects.forEach(select => {
+            // Initial color
+            updateRowColor(select);
+            
+            // On change
+            select.addEventListener('change', function() {
+                updateRowColor(this);
+            });
+        });
+        
+        function updateRowColor(select) {
+            const row = select.closest('tr');
+            
+            // Remove existing status classes
+            row.classList.remove('table-success', 'table-danger', 'table-warning', 'table-info');
+            
+            // Add appropriate class based on status
+            switch(select.value) {
+                case 'present':
+                    row.classList.add('table-success');
+                    break;
+                case 'absent':
+                    row.classList.add('table-danger');
+                    break;
+                case 'late':
+                    row.classList.add('table-warning');
+                    break;
+                case 'excused':
+                    row.classList.add('table-info');
+                    break;
+            }
+        }
+    });
+</script>
+{% endblock %}

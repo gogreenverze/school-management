@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - School Management System{% endblock %}
+
+{% block styles %}
+<style>
+    .register-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 0;
+    }
+
+    .register-card {
+        max-width: 550px;
+        width: 100%;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        background-color: rgba(255, 255, 255, 0.95);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .register-card:hover {
+        box-shadow: 0 20px 40px rgba(212, 0, 110, 0.2);
+        transform: translateY(-5px);
+    }
+
+    .register-header {
+        background: linear-gradient(135deg, var(--dark) 0%, #444 100%);
+        color: white;
+        padding: 25px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .register-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at top right, rgba(212, 0, 110, 0.3), transparent 70%);
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+
+    .register-card:hover .register-header::before {
+        opacity: 1;
+    }
+
+    .register-header h3 {
+        margin: 0;
+        font-weight: 600;
+        position: relative;
+        z-index: 1;
+    }
+
+    .register-body {
+        padding: 30px;
+    }
+
+    .register-form .form-floating {
+        margin-bottom: 20px;
+    }
+
+    .register-form .form-control {
+        border-radius: 10px;
+        padding: 12px 15px;
+        height: calc(3.5rem + 2px);
+        font-size: 1rem;
+    }
+
+    .register-form .form-floating label {
+        padding: 1rem 1.25rem;
+    }
+
+    .register-btn {
+        border-radius: 50px;
+        padding: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .register-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(212, 0, 110, 0.4);
+    }
+
+    .register-btn::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent);
+        transform: translateX(-100%);
+        transition: transform 0.5s ease;
+    }
+
+    .register-btn:hover::after {
+        transform: translateX(100%);
+    }
+
+    .login-link {
+        display: inline-block;
+        margin-top: 15px;
+        color: var(--primary);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .login-link:hover {
+        color: var(--primary-dark);
+    }
+
+    .login-link::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        bottom: -2px;
+        left: 0;
+        background-color: var(--primary);
+        transform: scaleX(0);
+        transform-origin: bottom right;
+        transition: transform 0.3s ease;
+    }
+
+    .login-link:hover::after {
+        transform: scaleX(1);
+        transform-origin: bottom left;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-header">
+            <div class="text-center">
+                <i class="fas fa-user-plus fa-2x mb-2"></i>
+                <h3>Create an Account</h3>
+                <p class="mb-0">Join our School Management System</p>
+            </div>
+        </div>
+        <div class="register-body">
+            <form method="POST" action="{{ url_for('auth.register', next=next) }}" class="register-form needs-validation" novalidate>
+                {{ form.hidden_tag() }}
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            {{ form.first_name(class="form-control", id="first_name", placeholder="First Name", required=true) }}
+                            <label for="first_name">First Name</label>
+                            {% for error in form.first_name.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            {{ form.last_name(class="form-control", id="last_name", placeholder="Last Name", required=true) }}
+                            <label for="last_name">Last Name</label>
+                            {% for error in form.last_name.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-floating">
+                    {{ form.username(class="form-control", id="username", placeholder="Username", required=true) }}
+                    <label for="username">Username</label>
+                    {% for error in form.username.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="form-floating">
+                    {{ form.email(class="form-control", id="email", placeholder="Email", required=true) }}
+                    <label for="email">Email</label>
+                    {% for error in form.email.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="form-floating">
+                    {{ form.password(class="form-control", id="password", placeholder="Password", required=true) }}
+                    <label for="password">Password</label>
+                    {% for error in form.password.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="form-floating">
+                    {{ form.password2(class="form-control", id="password2", placeholder="Confirm Password", required=true) }}
+                    <label for="password2">Confirm Password</label>
+                    {% for error in form.password2.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="form-floating">
+                    {{ form.role(class="form-select", id="role", required=true) }}
+                    <label for="role">I am a</label>
+                    {% for error in form.role.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="d-grid mt-4">
+                    {{ form.submit(class="btn btn-primary register-btn") }}
+                </div>
+
+                <div class="text-center mt-3">
+                    <p>Already have an account? <a href="{{ url_for('auth.login') }}" class="login-link">Sign In</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Focus first name field on page load
+        document.getElementById('first_name').focus();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}Section Management - School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Section Management</h1>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary mb-2">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    <a href="{{ url_for('admin.section_create') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add New Section
+    </a>
+</div>
+
+{% include 'admin/partials/view_toggle.html' %}
+
+<div class="card">
+    <div class="card-body">
+        <!-- List View -->
+        <div class="list-view">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Standard</th>
+                            <th>Description</th>
+                            <th>Capacity</th>
+                            <th>Status</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for section in sections %}
+                            <tr>
+                                <td>{{ section.name }}</td>
+                                <td>{{ section.standard.name }}</td>
+                                <td>{{ section.description|truncate(50) }}</td>
+                                <td>{{ section.capacity }}</td>
+                                <td>
+                                    {% if section.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ url_for('admin.section_edit', id=section.id) }}" class="btn btn-sm btn-primary me-1">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ section.id }}">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center">No sections found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Card View -->
+        <div class="card-view" style="display: none;">
+            <div class="desktop-card-container">
+                {% for section in sections %}
+                    <div class="desktop-card">
+                        <div class="desktop-card-title">{{ section.name }}</div>
+                        <div class="desktop-card-content">
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Standard</span>
+                                <span class="desktop-field-value">{{ section.standard.name }}</span>
+                            </div>
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Description</span>
+                                <span class="desktop-field-value">{{ section.description|truncate(50) }}</span>
+                            </div>
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Capacity</span>
+                                <span class="desktop-field-value">{{ section.capacity }}</span>
+                            </div>
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Status</span>
+                                <span class="desktop-field-value">
+                                    {% if section.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="desktop-card-actions">
+                            <a href="{{ url_for('admin.section_edit', id=section.id) }}" class="desktop-card-action-btn">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <button type="button" class="desktop-card-action-btn" data-bs-toggle="modal" data-bs-target="#deleteModal{{ section.id }}">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">No sections found.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Pagination Container -->
+        <div class="pagination-container mt-4"></div>
+    </div>
+</div>
+
+<!-- Delete Modals -->
+{% for section in sections %}
+    <div class="modal fade" id="deleteModal{{ section.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ section.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel{{ section.id }}">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete the section <strong>{{ section.name }}</strong> from <strong>{{ section.standard.name }}</strong>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="{{ url_for('admin.section_delete', id=section.id) }}" method="POST">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+{% endblock %}

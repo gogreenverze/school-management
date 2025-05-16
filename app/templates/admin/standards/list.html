@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}Standard Management - School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Standard Management</h1>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary mb-2">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    <a href="{{ url_for('admin.standard_create') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add New Standard
+    </a>
+</div>
+
+{% include 'admin/partials/view_toggle.html' %}
+
+<div class="card">
+    <div class="card-body">
+        <!-- List View -->
+        <div class="list-view">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Board</th>
+                            <th>Description</th>
+                            <th>Academic Year</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for standard in standards %}
+                            <tr>
+                                <td>{{ standard.name }}</td>
+                                <td>
+                                    {% if standard.board %}
+                                        <span class="badge bg-info">{{ standard.board.name }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">No Board</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ standard.description|truncate(50) }}</td>
+                                <td>{{ standard.academic_year }}</td>
+                                <td>
+                                    {% if standard.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('admin.standard_edit', id=standard.id) }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ standard.id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center">No standards found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Card View -->
+        <div class="card-view" style="display: none;">
+            <div class="desktop-card-container">
+                {% for standard in standards %}
+                    <div class="desktop-card">
+                        <div class="desktop-card-title">{{ standard.name }}</div>
+                        <div class="desktop-card-content">
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Description</span>
+                                <span class="desktop-field-value">{{ standard.description|truncate(50) }}</span>
+                            </div>
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Academic Year</span>
+                                <span class="desktop-field-value">{{ standard.academic_year }}</span>
+                            </div>
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Status</span>
+                                <span class="desktop-field-value">
+                                    {% if standard.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="desktop-card-actions">
+                            <a href="{{ url_for('admin.standard_edit', id=standard.id) }}" class="desktop-card-action-btn">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <button type="button" class="desktop-card-action-btn" data-bs-toggle="modal" data-bs-target="#deleteModal{{ standard.id }}">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">No standards found.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Pagination Container -->
+        <div class="pagination-container mt-4"></div>
+    </div>
+</div>
+
+<!-- Delete Modals -->
+{% for standard in standards %}
+    <div class="modal fade" id="deleteModal{{ standard.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ standard.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel{{ standard.id }}">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete the standard <strong>{{ standard.name }}</strong>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="{{ url_for('admin.standard_delete', id=standard.id) }}" method="POST">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+{% endblock %}

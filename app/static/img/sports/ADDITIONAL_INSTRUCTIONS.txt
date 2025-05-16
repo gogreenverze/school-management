@@ -1,0 +1,14 @@
+ADDITIONAL INSTRUCTIONS FOR SPORTS IMAGES
+
+In addition to the images listed in README.txt, please also create these category images:
+
+1. default.jpg - A generic sports image to use as fallback
+2. team_sport.jpg - An image representing team sports (football, cricket, etc.)
+3. individual_sport.jpg - An image representing individual sports
+4. martial_arts.jpg - An image representing martial arts
+
+For the silambam.jpg image specifically, please use the image you shared with the silhouettes of two practitioners with staffs against a sunset background.
+
+For basketball.jpg and kabaddi.jpg, please use high-quality images that clearly show the sport in action.
+
+Image dimensions should be approximately 1350x900 pixels for best results.

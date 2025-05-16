@@ -1,0 +1,119 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Fee Reminder Configuration</h1>
+    </div>
+
+    <!-- Back to Dashboard Button -->
+    <div class="mb-4">
+        <a href="{{ url_for('admin_fees.dashboard') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Reminder Configuration Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Configure Automatic Fee Reminders</h6>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {{ form.hidden_tag() }}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h6 class="m-0 font-weight-bold text-primary">Upcoming Payment Reminders</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch">
+                                        {{ form.enable_upcoming_reminders(class="custom-control-input") }}
+                                        {{ form.enable_upcoming_reminders.label(class="custom-control-label") }}
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    {{ form.upcoming_days_before.label(class="form-label") }}
+                                    {{ form.upcoming_days_before(class="form-control") }}
+                                    {% if form.upcoming_days_before.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.upcoming_days_before.errors %}
+                                        <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">Number of days before due date to send reminders</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Notification Methods</label>
+                                    <div class="custom-control custom-checkbox">
+                                        {{ form.upcoming_email(class="custom-control-input") }}
+                                        {{ form.upcoming_email.label(class="custom-control-label") }}
+                                    </div>
+                                    <div class="custom-control custom-checkbox">
+                                        {{ form.upcoming_whatsapp(class="custom-control-input") }}
+                                        {{ form.upcoming_whatsapp.label(class="custom-control-label") }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h6 class="m-0 font-weight-bold text-primary">Overdue Payment Reminders</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch">
+                                        {{ form.enable_overdue_reminders(class="custom-control-input") }}
+                                        {{ form.enable_overdue_reminders.label(class="custom-control-label") }}
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    {{ form.overdue_frequency.label(class="form-label") }}
+                                    {{ form.overdue_frequency(class="form-control") }}
+                                    {% if form.overdue_frequency.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.overdue_frequency.errors %}
+                                        <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">How often to send overdue reminders</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Notification Methods</label>
+                                    <div class="custom-control custom-checkbox">
+                                        {{ form.overdue_email(class="custom-control-input") }}
+                                        {{ form.overdue_email.label(class="custom-control-label") }}
+                                    </div>
+                                    <div class="custom-control custom-checkbox">
+                                        {{ form.overdue_whatsapp(class="custom-control-input") }}
+                                        {{ form.overdue_whatsapp.label(class="custom-control-label") }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Configuration
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

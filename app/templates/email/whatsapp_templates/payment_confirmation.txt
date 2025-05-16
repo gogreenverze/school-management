@@ -1,0 +1,17 @@
+*Payment Confirmation*
+
+Dear Parent,
+
+We have received a payment of ₹{{amount}} for {{student_name}}.
+
+*Payment Details:*
+- Student: {{student_name}}
+- Amount: ₹{{amount}}
+- Receipt Number: {{receipt_number}}
+- Payment Date: {{payment_date}}
+- Payment Method: {{payment_method}}
+
+Thank you for your payment.
+
+Regards,
+School Management System

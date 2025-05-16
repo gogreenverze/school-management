@@ -1,0 +1,312 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Invoices - School Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <h1 class="h3 mb-3 mb-md-0">Invoices</h1>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ url_for('admin_invoices.create') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Create Invoice
+            </a>
+            <a href="{{ url_for('admin_invoices.index') }}" class="btn btn-outline-primary">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Filter Form -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Filter Invoices</h6>
+        </div>
+        <div class="card-body">
+            <form method="get" action="{{ url_for('admin_invoices.list') }}" class="row g-3">
+                <div class="col-md-3 col-sm-6">
+                    <label for="student_id" class="form-label">Student</label>
+                    {{ form.student_id(class="form-select form-select-mobile") }}
+                </div>
+                <div class="col-md-2 col-sm-6">
+                    <label for="invoice_type" class="form-label">Invoice Type</label>
+                    {{ form.invoice_type(class="form-select form-select-mobile") }}
+                </div>
+                <div class="col-md-2 col-sm-6">
+                    <label for="status" class="form-label">Status</label>
+                    {{ form.status(class="form-select form-select-mobile") }}
+                </div>
+                <div class="col-md-2 col-sm-6">
+                    <label for="date_from" class="form-label">From Date</label>
+                    {{ form.date_from(class="form-control form-control-mobile", type="date") }}
+                </div>
+                <div class="col-md-2 col-sm-6">
+                    <label for="date_to" class="form-label">To Date</label>
+                    {{ form.date_to(class="form-control form-control-mobile", type="date") }}
+                </div>
+                <div class="col-md-1 col-sm-6">
+                    <label for="submit" class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary w-100 btn-lg-mobile">Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Invoices Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">All Invoices</h6>
+            <div class="view-toggle-buttons">
+                <button id="listViewBtn" class="btn btn-sm btn-outline-primary view-toggle-btn active">
+                    <i class="fas fa-list"></i> List
+                </button>
+                <button id="cardViewBtn" class="btn btn-sm btn-outline-primary view-toggle-btn">
+                    <i class="fas fa-th-large"></i> Cards
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- List View -->
+            <div id="listView" class="list-view">
+                <div class="table-responsive">
+                    <table class="table table-bordered" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>Student</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Due Date</th>
+                                <th>Amount</th>
+                                <th>Paid</th>
+                                <th>Balance</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for invoice in invoices %}
+                            <tr>
+                                <td data-label="Invoice #">{{ invoice.invoice_number }}</td>
+                                <td data-label="Student">{% if invoice.student and invoice.student.user %}{{ invoice.student.user.first_name }} {{ invoice.student.user.last_name }}{% else %}Unknown Student{% endif %}</td>
+                                <td data-label="Type">{{ invoice.invoice_type|replace('_', ' ')|title }}</td>
+                                <td data-label="Date">{{ invoice.invoice_date.strftime('%d-%m-%Y') }}</td>
+                                <td data-label="Due Date">{{ invoice.due_date.strftime('%d-%m-%Y') }}</td>
+                                <td data-label="Amount">₹{{ "%.2f"|format(invoice.total_amount) }}</td>
+                                <td data-label="Paid">₹{{ "%.2f"|format(invoice.amount_paid) }}</td>
+                                <td data-label="Balance">₹{{ "%.2f"|format(invoice.balance) }}</td>
+                                <td data-label="Status">
+                                    {% if invoice.status == 'draft' %}
+                                    <span class="badge bg-secondary">Draft</span>
+                                    {% elif invoice.status == 'sent' %}
+                                    <span class="badge bg-primary">Sent</span>
+                                    {% elif invoice.status == 'paid' %}
+                                    <span class="badge bg-success">Paid</span>
+                                    {% elif invoice.status == 'partially_paid' %}
+                                    <span class="badge bg-info">Partially Paid</span>
+                                    {% elif invoice.status == 'overdue' %}
+                                    <span class="badge bg-danger">Overdue</span>
+                                    {% elif invoice.status == 'cancelled' %}
+                                    <span class="badge bg-dark">Cancelled</span>
+                                    {% endif %}
+                                </td>
+                                <td data-label="Actions">
+                                    <a href="{{ url_for('admin_invoices.view', id=invoice.id) }}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ url_for('admin_invoices.edit', id=invoice.id) }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    {% if invoice.pdf_path %}
+                                    <a href="{{ url_for('admin_invoices.download_pdf', id=invoice.id) }}" class="btn btn-sm btn-secondary">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                    {% else %}
+                                    <a href="{{ url_for('admin_invoices.generate_pdf', id=invoice.id) }}" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-file-pdf"></i>
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Card View (for mobile) -->
+            <div id="cardView" class="card-view" style="display: none;">
+                <div class="desktop-card-container">
+                    {% for invoice in invoices %}
+                    <div class="desktop-card shadow-sm mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="m-0 font-weight-bold">{{ invoice.invoice_number }}</h6>
+                            {% if invoice.status == 'draft' %}
+                            <span class="badge bg-secondary">Draft</span>
+                            {% elif invoice.status == 'sent' %}
+                            <span class="badge bg-primary">Sent</span>
+                            {% elif invoice.status == 'paid' %}
+                            <span class="badge bg-success">Paid</span>
+                            {% elif invoice.status == 'partially_paid' %}
+                            <span class="badge bg-info">Partially Paid</span>
+                            {% elif invoice.status == 'overdue' %}
+                            <span class="badge bg-danger">Overdue</span>
+                            {% elif invoice.status == 'cancelled' %}
+                            <span class="badge bg-dark">Cancelled</span>
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">Student:</div>
+                                <div class="col-6">{% if invoice.student and invoice.student.user %}{{ invoice.student.user.first_name }} {{ invoice.student.user.last_name }}{% else %}Unknown Student{% endif %}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">Type:</div>
+                                <div class="col-6">{{ invoice.invoice_type|replace('_', ' ')|title }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">Date:</div>
+                                <div class="col-6">{{ invoice.invoice_date.strftime('%d-%m-%Y') }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">Due Date:</div>
+                                <div class="col-6">{{ invoice.due_date.strftime('%d-%m-%Y') }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">Amount:</div>
+                                <div class="col-6">₹{{ "%.2f"|format(invoice.total_amount) }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">Paid:</div>
+                                <div class="col-6">₹{{ "%.2f"|format(invoice.amount_paid) }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">Balance:</div>
+                                <div class="col-6">₹{{ "%.2f"|format(invoice.balance) }}</div>
+                            </div>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            <a href="{{ url_for('admin_invoices.view', id=invoice.id) }}" class="btn btn-sm btn-info">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                            <a href="{{ url_for('admin_invoices.edit', id=invoice.id) }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            {% if invoice.pdf_path %}
+                            <a href="{{ url_for('admin_invoices.download_pdf', id=invoice.id) }}" class="btn btn-sm btn-secondary">
+                                <i class="fas fa-download"></i> PDF
+                            </a>
+                            {% else %}
+                            <a href="{{ url_for('admin_invoices.generate_pdf', id=invoice.id) }}" class="btn btn-sm btn-warning">
+                                <i class="fas fa-file-pdf"></i> Generate
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            {% if pagination.pages > 1 %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if pagination.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin_invoices.list', page=pagination.prev_num, **request.args) }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for page in pagination.iter_pages(left_edge=2, left_current=2, right_current=3, right_edge=2) %}
+                        {% if page %}
+                            {% if page == pagination.page %}
+                            <li class="page-item active">
+                                <a class="page-link" href="#">{{ page }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('admin_invoices.list', page=page, **request.args) }}">{{ page }}</a>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#">...</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if pagination.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin_invoices.list', page=pagination.next_num, **request.args) }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // View toggle functionality
+        const listViewBtn = document.getElementById('listViewBtn');
+        const cardViewBtn = document.getElementById('cardViewBtn');
+        const listView = document.getElementById('listView');
+        const cardView = document.getElementById('cardView');
+
+        // Set default view based on screen size
+        function setDefaultView() {
+            if (window.innerWidth < 768) {
+                // Mobile view - default to cards
+                listView.style.display = 'none';
+                cardView.style.display = 'block';
+                listViewBtn.classList.remove('active');
+                cardViewBtn.classList.add('active');
+            } else {
+                // Desktop view - default to list
+                listView.style.display = 'block';
+                cardView.style.display = 'none';
+                listViewBtn.classList.add('active');
+                cardViewBtn.classList.remove('active');
+            }
+        }
+
+        // Initial setup
+        setDefaultView();
+
+        // Handle window resize
+        window.addEventListener('resize', setDefaultView);
+
+        // Handle list view button click
+        listViewBtn.addEventListener('click', function() {
+            listView.style.display = 'block';
+            cardView.style.display = 'none';
+            listViewBtn.classList.add('active');
+            cardViewBtn.classList.remove('active');
+        });
+
+        // Handle card view button click
+        cardViewBtn.addEventListener('click', function() {
+            listView.style.display = 'none';
+            cardView.style.display = 'block';
+            cardViewBtn.classList.add('active');
+            listViewBtn.classList.remove('active');
+        });
+    });
+</script>
+{% endblock %}

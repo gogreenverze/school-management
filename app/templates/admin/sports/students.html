@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - School Management System{% endblock %}
+
+{% block styles %}
+<style>
+    /* Mobile-friendly styles for student cards */
+    .student-card {
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .student-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .student-card .card-title {
+        color: #333;
+        font-weight: 600;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+    }
+
+    .student-info p {
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+    }
+
+    .student-info strong {
+        color: #555;
+        display: inline-block;
+        width: 100px;
+    }
+
+    /* Enroll card styles */
+    .enroll-card {
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .enroll-card:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 576px) {
+        .col-md-8, .col-md-4 {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        .btn {
+            padding: 0.375rem 0.75rem;
+        }
+
+        /* Adjust layout for mobile */
+        .row {
+            margin-left: -10px;
+            margin-right: -10px;
+        }
+
+        /* Make the form elements larger for touch */
+        .form-select {
+            height: 45px;
+            font-size: 16px;
+        }
+
+        .form-label {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        /* Make buttons more touch-friendly */
+        .btn {
+            min-height: 44px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Student Enrollment - {{ sport.name }}</h1>
+        <div class="mt-2">
+            <a href="{{ url_for('admin.sport_list') }}" class="btn btn-secondary me-2">
+                <i class="fas fa-list"></i> All Sports
+            </a>
+            <a href="{{ url_for('admin.sport_view', id=sport.id) }}" class="btn btn-info">
+                <i class="fas fa-arrow-left"></i> Back to Sport
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mb-4">
+        <div class="card mb-md-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Enrolled Students ({{ enrolled_students|length }} / {{ sport.capacity }})</h5>
+            </div>
+            <div class="card-body">
+                {% if enrolled_students %}
+                <!-- Desktop View -->
+                <div class="table-responsive d-none d-md-block">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Roll Number</th>
+                                <th>Name</th>
+                                <th>Standard</th>
+                                <th>Section</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in enrolled_students %}
+                            <tr>
+                                <td>{{ student.roll_number }}</td>
+                                <td>{{ student.user.first_name }} {{ student.user.last_name }}</td>
+                                <td>{{ student.standard.name }}</td>
+                                <td>{{ student.section.name if student.section else '-' }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#removeStudentModal{{ student.id }}">
+                                        <i class="fas fa-user-minus"></i> Remove
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile View -->
+                <div class="d-md-none">
+                    <div class="student-cards">
+                        {% for student in enrolled_students %}
+                        <div class="card mb-3 student-card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ student.user.first_name }} {{ student.user.last_name }}</h5>
+                                <div class="student-info">
+                                    <p><strong>Roll Number:</strong> {{ student.roll_number }}</p>
+                                    <p><strong>Standard:</strong> {{ student.standard.name }}</p>
+                                    <p><strong>Section:</strong> {{ student.section.name if student.section else '-' }}</p>
+                                </div>
+                                <div class="d-flex justify-content-end mt-3">
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#removeStudentModal{{ student.id }}">
+                                        <i class="fas fa-user-minus"></i> Remove
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Remove Student Modal -->
+                        <div class="modal fade" id="removeStudentModal{{ student.id }}" tabindex="-1" aria-labelledby="removeStudentModalLabel{{ student.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="removeStudentModalLabel{{ student.id }}">Confirm Remove</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to remove <strong>{{ student.user.first_name }} {{ student.user.last_name }}</strong> from {{ sport.name }}?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <form action="{{ url_for('admin.sport_student_remove', sport_id=sport.id, student_id=student.id) }}" method="post">
+                                            <button type="submit" class="btn btn-danger">Remove</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> No students are currently enrolled in this sport.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card enroll-card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Enroll New Student</h5>
+            </div>
+            <div class="card-body">
+                {% if enrolled_students|length >= sport.capacity %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i> Maximum capacity reached ({{ sport.capacity }} students).
+                </div>
+                {% elif form.student_ids.choices|length > 1 %}
+                <form method="POST" action="{{ url_for('admin.sport_students', sport_id=sport.id) }}">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.student_ids.label(class="form-label") }}
+                        {{ form.student_ids(class="form-select") }}
+                        {% for error in form.student_ids.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> No available students to enroll.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

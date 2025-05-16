@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block title %}Standards/Grades - School Management System{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .standard-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+    }
+
+    .standard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .standard-card .card-img-top {
+        height: 180px;
+        object-fit: cover;
+    }
+
+    .badge {
+        transition: all 0.3s ease;
+    }
+
+    .badge.bg-info:hover {
+        background-color: #0dcaf0 !important;
+    }
+
+    .badge.bg-primary:hover {
+        background-color: #0d6efd !important;
+    }
+
+    .badge.bg-secondary:hover {
+        background-color: #6c757d !important;
+    }
+
+    /* Custom button styling */
+    .btn-primary {
+        background-color: #D4006E;
+        border-color: #D4006E;
+    }
+
+    .btn-primary:hover {
+        background-color: #A30057;
+        border-color: #A30057;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+    <div class="hero-content">
+        <h1 class="hero-title">Excellence in Education</h1>
+        <p class="hero-subtitle">Discover our comprehensive curriculum designed to nurture young minds and build future leaders</p>
+        <a href="#standards-grades" class="hero-btn">Explore Standards</a>
+    </div>
+</div>
+
+<div class="row" id="standards-grades">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h1 class="card-title">Our Standards/Grades</h1>
+                <p class="lead">Explore our comprehensive curriculum designed to provide quality education at every grade level.</p>
+            </div>
+        </div>
+
+        <div class="row">
+            {% for standard in standards %}
+                <div class="col-md-6 mb-4">
+                    <div class="standard-card card">
+                        <img src="{{ standard.image }}" class="card-img-top" alt="{{ standard.name }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ standard.name }}</h5>
+                            <div class="mb-2">
+                                <span class="badge bg-info">{{ standard.board }}</span>
+                                <span class="badge bg-secondary">{{ standard.academic_year }}</span>
+                            </div>
+                            <p class="card-text">{{ standard.description }}</p>
+
+                            <h6 class="mt-3 mb-2">Subjects:</h6>
+                            <div class="mb-3">
+                                {% for subject in standard.subjects %}
+                                    <span class="badge bg-primary me-1 mb-1">{{ subject }}</span>
+                                {% endfor %}
+                            </div>
+
+                            <a href="#" class="btn btn-primary">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+
+                {% if loop.index is divisibleby(2) and not loop.last %}
+                    </div><div class="row">
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- Simple Pagination -->
+        {% if pagination and pagination.pages > 1 %}
+        <div class="mt-4 mb-4 text-center">
+            <div class="d-inline-block">
+                <a href="{{ url_for('main.standards', page=pagination.prev_num) if pagination.has_prev else '#' }}"
+                   class="btn btn-lg {% if pagination.page == 1 %}btn-secondary disabled{% else %}btn-primary{% endif %} me-2">
+                    <i class="fas fa-arrow-left"></i> Previous
+                </a>
+
+                <span class="btn btn-lg btn-light disabled">
+                    Page {{ pagination.page }} of {{ pagination.pages }}
+                </span>
+
+                <a href="{{ url_for('main.standards', page=pagination.next_num) if pagination.has_next else '#' }}"
+                   class="btn btn-lg {% if not pagination.has_next %}btn-secondary disabled{% else %}btn-primary{% endif %} ms-2">
+                    Next <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Login</h5>
+            </div>
+            <div class="card-body">
+                {% if current_user.is_authenticated %}
+                    <p>You are logged in as <strong>{{ current_user.username }}</strong>.</p>
+                    <p>Role: <strong>{{ current_user.role|capitalize }}</strong></p>
+
+                    <a href="{{ url_for('auth.profile') }}" class="btn btn-primary btn-block w-100 mb-2">
+                        <i class="fas fa-user"></i> View Profile
+                    </a>
+
+                    {% if current_user.is_admin() %}
+                        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary btn-block w-100">
+                            <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+                        </a>
+                    {% elif current_user.is_teacher() %}
+                        <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-secondary btn-block w-100">
+                            <i class="fas fa-chalkboard-teacher"></i> Go to Dashboard
+                        </a>
+                    {% elif current_user.is_parent() %}
+                        <a href="{{ url_for('parent.dashboard') }}" class="btn btn-secondary btn-block w-100">
+                            <i class="fas fa-users"></i> Go to Dashboard
+                        </a>
+                    {% elif current_user.is_student() %}
+                        <a href="{{ url_for('student.dashboard') }}" class="btn btn-secondary btn-block w-100">
+                            <i class="fas fa-user-graduate"></i> Go to Dashboard
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <form method="POST" action="{{ url_for('auth.login') }}">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
+                            <label class="form-check-label" for="remember_me">Remember Me</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Sign In</button>
+                    </form>
+                    <div class="mt-3 text-center">
+                        <a href="{{ url_for('auth.reset_password_request') }}">Forgot Password?</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Curriculum Highlights</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-primary me-2"></i> Comprehensive STEM education
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-primary me-2"></i> Arts and creative expression
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-primary me-2"></i> Physical education and health
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-primary me-2"></i> Language and literacy development
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-primary me-2"></i> Social and emotional learning
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Fee Structures - {{ sport.name }}</h1>
+        <div class="mt-2">
+            <a href="{{ url_for('admin.sport_list') }}" class="btn btn-secondary me-2">
+                <i class="fas fa-list"></i> All Sports
+            </a>
+            <a href="{{ url_for('admin.sport_view', id=sport.id) }}" class="btn btn-info">
+                <i class="fas fa-arrow-left"></i> Back to Sport
+            </a>
+        </div>
+    </div>
+    <a href="{{ url_for('admin.sport_fee_create', sport_id=sport.id) }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add New Fee Structure
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Fee Structures for {{ sport.name }}</h5>
+    </div>
+    <div class="card-body">
+        {% if fees %}
+        <div class="row">
+            {% for fee in fees %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ fee.name }}</h5>
+                        {% if fee.is_active %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h3 class="text-primary">₹{{ fee.amount }}</h3>
+                            <span class="badge bg-info">{{ fee.frequency|capitalize }}</span>
+                            {% if fee.duration %}
+                                <span class="badge bg-secondary">{{ fee.duration }} months</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Ongoing</span>
+                            {% endif %}
+                        </div>
+                        
+                        {% if fee.description %}
+                        <div class="mb-3">
+                            <strong>Description:</strong>
+                            <p>{{ fee.description }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="d-flex justify-content-between mt-3">
+                            <a href="{{ url_for('admin.sport_fee_edit', sport_id=sport.id, id=fee.id) }}" class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteFeeModal{{ fee.id }}">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <small>Created: {{ fee.created_at.strftime('%d-%m-%Y') }}</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Delete Modal -->
+            <div class="modal fade" id="deleteFeeModal{{ fee.id }}" tabindex="-1" aria-labelledby="deleteFeeModalLabel{{ fee.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteFeeModalLabel{{ fee.id }}">Confirm Delete</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete the fee structure <strong>{{ fee.name }}</strong>?
+                            <p class="text-danger mt-2">This action cannot be undone.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <form action="{{ url_for('admin.sport_fee_delete', sport_id=sport.id, id=fee.id) }}" method="post">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i> No fee structures found for this sport. <a href="{{ url_for('admin.sport_fee_create', sport_id=sport.id) }}">Add a new fee structure</a>.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

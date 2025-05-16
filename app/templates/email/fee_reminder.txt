@@ -1,0 +1,17 @@
+Dear {{ user.get_full_name() }},
+
+This is a reminder that a fee payment for {{ student.user.get_full_name() }} is overdue.
+
+Payment Details:
+- Due Date: {{ reminder.due_date.strftime('%d-%m-%Y') }}
+- Amount Due: ₹{{ reminder.amount_due }}
+- Days Overdue: {{ reminder.days_overdue }}
+
+Please make the payment as soon as possible to avoid any further penalties.
+
+You can log in to your parent account to make the payment online or visit the school office.
+
+Thank you for your prompt attention to this matter.
+
+Regards,
+School Administration

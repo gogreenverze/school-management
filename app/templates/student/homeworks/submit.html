@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Submit Homework</h1>
+        <h4 class="text-muted">{{ homework.title }}</h4>
+        <div class="mt-2">
+            <a href="{{ url_for('student.dashboard') }}" class="btn btn-secondary me-2">
+                <i class="fas fa-home"></i> Back to Dashboard
+            </a>
+            <a href="{{ url_for('student_homework.view', homework_id=homework.id) }}" class="btn btn-info">
+                <i class="fas fa-arrow-left"></i> Back to Homework
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-5">
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Homework Details</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Class:</strong> {{ homework.class.name }} - {{ homework.class.subject }}</p>
+                <p><strong>Teacher:</strong> {{ homework.teacher.first_name }} {{ homework.teacher.last_name }}</p>
+                <p><strong>Assigned Date:</strong> {{ homework.assigned_date.strftime('%d-%m-%Y') }}</p>
+                <p><strong>Due Date:</strong> {{ homework.due_date.strftime('%d-%m-%Y') }}</p>
+                <p><strong>Max Score:</strong> {{ homework.max_score }}</p>
+
+                {% if is_late %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i> This homework is past due. Your submission will be marked as late.
+                    </div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <h5>Description:</h5>
+                    <div class="p-3 bg-light rounded">
+                        {{ homework.description|nl2br }}
+                    </div>
+                </div>
+
+                {% if homework.attachment %}
+                    <div class="mb-3">
+                        <h5>Attachment:</h5>
+                        <a href="{{ url_for('static', filename='uploads/homeworks/' + homework.attachment) }}"
+                           class="btn btn-outline-primary" target="_blank">
+                            <i class="fas fa-download"></i> Download Attachment
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">
+                    {% if existing_submission %}
+                        Edit Your Submission
+                    {% else %}
+                        Submit Your Work
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+
+                    <div class="form-group mb-3">
+                        {{ form.content.label(class="form-label") }}
+                        {{ form.content(class="form-control" + (" is-invalid" if form.content.errors else ""), rows=8) }}
+                        {% for error in form.content.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                        <small class="form-text text-muted">Type your answer here. You can also upload a file below.</small>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        {{ form.attachment.label(class="form-label") }}
+                        {{ form.attachment(class="form-control" + (" is-invalid" if form.attachment.errors else "")) }}
+                        {% for error in form.attachment.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                        <small class="form-text text-muted">Upload your work as a file (PDF, DOC, DOCX, PPT, PPTX, JPG, PNG).</small>
+
+                        {% if existing_submission and existing_submission.attachment %}
+                            <div class="mt-2">
+                                <p><strong>Current Attachment:</strong> {{ existing_submission.attachment }}</p>
+                                <p class="text-muted">Uploading a new file will replace the current one.</p>
+                                <a href="{{ url_for('static', filename='uploads/submissions/' + existing_submission.attachment) }}"
+                                   class="btn btn-sm btn-outline-primary" target="_blank">
+                                    <i class="fas fa-eye"></i> View Current Attachment
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('student_homework.view', homework_id=homework.id) }}" class="btn btn-secondary me-md-2">Cancel</a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

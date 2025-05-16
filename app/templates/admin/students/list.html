@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Management - School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Student Management</h1>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary mb-2">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    <a href="{{ url_for('admin.student_create') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add New Student
+    </a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Filter Students</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" action="{{ url_for('admin.student_list') }}" class="row g-3">
+            <div class="col-md-4">
+                <label for="board_id" class="form-label">Board</label>
+                <select name="board_id" id="board_id" class="form-select">
+                    <option value="">All Boards</option>
+                    {% for board in boards %}
+                    <option value="{{ board.id }}" {% if selected_board_id == board.id %}selected{% endif %}>{{ board.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="fas fa-filter"></i> Apply Filter
+                </button>
+                <a href="{{ url_for('admin.student_list') }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Clear Filter
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% include 'admin/partials/view_toggle.html' %}
+
+<div class="card">
+    <div class="card-body">
+        <!-- List View -->
+        <div class="list-view">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Roll Number</th>
+                            <th>Name</th>
+                            <th>Board</th>
+                            <th>Standard</th>
+                            <th>Section</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                            <tr>
+                                <td>{{ student.roll_number }}</td>
+                                <td>{{ student.user.get_full_name() }}</td>
+                                <td>{{ student.standard.board.name if student.standard and student.standard.board else 'N/A' }}</td>
+                                <td>{{ student.standard.name if student.standard else '' }}</td>
+                                <td>{{ student.section.name if student.section else '' }}</td>
+                                <td>
+                                    {% if student.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('admin.student_edit', id=student.id) }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ student.id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center">No students found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Card View -->
+        <div class="card-view" style="display: none;">
+            <div class="desktop-card-container">
+                {% for student in students %}
+                    <div class="desktop-card">
+                        <div class="desktop-card-title">{{ student.user.get_full_name() }}</div>
+                        <div class="desktop-card-content">
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Roll Number</span>
+                                <span class="desktop-field-value">{{ student.roll_number }}</span>
+                            </div>
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Board</span>
+                                <span class="desktop-field-value">{{ student.standard.board.name if student.standard and student.standard.board else 'N/A' }}</span>
+                            </div>
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Standard</span>
+                                <span class="desktop-field-value">{{ student.standard.name if student.standard else 'N/A' }}</span>
+                            </div>
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Section</span>
+                                <span class="desktop-field-value">{{ student.section.name if student.section else 'N/A' }}</span>
+                            </div>
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Status</span>
+                                <span class="desktop-field-value">
+                                    {% if student.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="desktop-card-actions">
+                            <a href="{{ url_for('admin.student_edit', id=student.id) }}" class="desktop-card-action-btn">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <button type="button" class="desktop-card-action-btn" data-bs-toggle="modal" data-bs-target="#deleteModal{{ student.id }}">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">No students found.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Pagination Container -->
+        <div class="pagination-container mt-4"></div>
+    </div>
+</div>
+
+<!-- Delete Modals -->
+{% for student in students %}
+    <div class="modal fade" id="deleteModal{{ student.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ student.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel{{ student.id }}">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete the student <strong>{{ student.user.get_full_name() }}</strong>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="{{ url_for('admin.student_delete', id=student.id) }}" method="POST">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Assign New Homework</h1>
+        <div class="mt-2">
+            <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-secondary me-2">
+                <i class="fas fa-home"></i> Back to Dashboard
+            </a>
+            <a href="{{ url_for('teacher_homework.list') }}" class="btn btn-info">
+                <i class="fas fa-arrow-left"></i> Back to Homework List
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {{ form.title.label(class="form-label") }}
+                        {{ form.title(class="form-control" + (" is-invalid" if form.title.errors else "")) }}
+                        {% for error in form.title.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {{ form.class_id.label(class="form-label") }}
+                        {{ form.class_id(class="form-select" + (" is-invalid" if form.class_id.errors else "")) }}
+                        {% for error in form.class_id.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {{ form.due_date.label(class="form-label") }}
+                        {{ form.due_date(class="form-control" + (" is-invalid" if form.due_date.errors else ""), type="date") }}
+                        {% for error in form.due_date.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {{ form.max_score.label(class="form-label") }}
+                        {{ form.max_score(class="form-control" + (" is-invalid" if form.max_score.errors else ""), type="number") }}
+                        {% for error in form.max_score.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group mb-3">
+                {{ form.description.label(class="form-label") }}
+                {{ form.description(class="form-control" + (" is-invalid" if form.description.errors else ""), rows=5) }}
+                {% for error in form.description.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+                <small class="form-text text-muted">Provide clear instructions for the homework assignment.</small>
+            </div>
+            
+            <div class="form-group mb-3">
+                {{ form.attachment.label(class="form-label") }}
+                {{ form.attachment(class="form-control" + (" is-invalid" if form.attachment.errors else "")) }}
+                {% for error in form.attachment.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+                <small class="form-text text-muted">Optional: Upload a file to provide additional materials for the homework.</small>
+            </div>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a href="{{ url_for('teacher_homework.list') }}" class="btn btn-secondary me-md-2">Cancel</a>
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

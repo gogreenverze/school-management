@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+
+{% block title %}User Profile - School Management System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+    <div class="hero-content">
+        <h1 class="hero-title">Your Profile</h1>
+        <p class="hero-subtitle">Manage your account information and preferences</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Profile Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user-circle fa-6x text-primary"></i>
+                    </div>
+                    <h4 class="mt-3">{{ current_user.username }}</h4>
+                    <p class="text-muted">{{ current_user.role|capitalize }}</p>
+                </div>
+                
+                <div class="profile-info">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Email:</label>
+                        <p>{{ current_user.email }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Last Login:</label>
+                        <p>{{ current_user.last_login.strftime('%Y-%m-%d %H:%M:%S') if current_user.last_login else 'Never' }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Account Created:</label>
+                        <p>{{ current_user.created_at.strftime('%Y-%m-%d') if current_user.created_at else 'Unknown' }}</p>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-edit me-2"></i> Edit Profile
+                    </a>
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="fas fa-key me-2"></i> Change Password
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Dashboard</h5>
+            </div>
+            <div class="card-body">
+                {% if current_user.is_admin() %}
+                    <div class="alert alert-primary">
+                        <i class="fas fa-info-circle me-2"></i> You have administrator privileges.
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-users text-primary me-2"></i> User Management</h5>
+                                    <p class="card-text">Manage users, roles, and permissions.</p>
+                                    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-sm btn-primary">Go to Dashboard</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-cog text-primary me-2"></i> System Settings</h5>
+                                    <p class="card-text">Configure system settings and preferences.</p>
+                                    <a href="#" class="btn btn-sm btn-primary">Manage Settings</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% elif current_user.is_teacher() %}
+                    <div class="alert alert-primary">
+                        <i class="fas fa-info-circle me-2"></i> You are logged in as a teacher.
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-chalkboard text-primary me-2"></i> Classes</h5>
+                                    <p class="card-text">Manage your classes and curriculum.</p>
+                                    <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-sm btn-primary">Go to Dashboard</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-book text-primary me-2"></i> Assignments</h5>
+                                    <p class="card-text">Create and grade student assignments.</p>
+                                    <a href="#" class="btn btn-sm btn-primary">Manage Assignments</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% elif current_user.is_parent() %}
+                    <div class="alert alert-primary">
+                        <i class="fas fa-info-circle me-2"></i> You are logged in as a parent.
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-child text-primary me-2"></i> Children</h5>
+                                    <p class="card-text">View your children's progress and activities.</p>
+                                    <a href="{{ url_for('parent.dashboard') }}" class="btn btn-sm btn-primary">Go to Dashboard</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-money-bill text-primary me-2"></i> Payments</h5>
+                                    <p class="card-text">Manage fee payments and view payment history.</p>
+                                    <a href="#" class="btn btn-sm btn-primary">View Payments</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% elif current_user.is_student() %}
+                    <div class="alert alert-primary">
+                        <i class="fas fa-info-circle me-2"></i> You are logged in as a student.
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-book-open text-primary me-2"></i> Courses</h5>
+                                    <p class="card-text">View your courses and learning materials.</p>
+                                    <a href="{{ url_for('student.dashboard') }}" class="btn btn-sm btn-primary">Go to Dashboard</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-chart-line text-primary me-2"></i> Progress</h5>
+                                    <p class="card-text">Track your academic progress and achievements.</p>
+                                    <a href="#" class="btn btn-sm btn-primary">View Progress</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i> Your role doesn't have a specific dashboard.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                <div class="activity-timeline">
+                    <div class="activity-item">
+                        <div class="activity-icon bg-primary">
+                            <i class="fas fa-sign-in-alt"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h6 class="mb-1">Login</h6>
+                            <p class="text-muted mb-0">You logged in to the system</p>
+                            <small class="text-muted">{{ current_user.last_login.strftime('%Y-%m-%d %H:%M:%S') if current_user.last_login else 'Never' }}</small>
+                        </div>
+                    </div>
+                    
+                    <!-- More activity items would be dynamically generated here -->
+                    <div class="text-center mt-4">
+                        <p class="text-muted">No more activities to show</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(212, 0, 110, 0.1);
+        border-radius: 50%;
+        color: var(--primary);
+    }
+    
+    .activity-timeline {
+        position: relative;
+        padding-left: 45px;
+    }
+    
+    .activity-timeline::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 20px;
+        height: 100%;
+        width: 2px;
+        background-color: rgba(212, 0, 110, 0.2);
+    }
+    
+    .activity-item {
+        position: relative;
+        padding-bottom: 25px;
+    }
+    
+    .activity-icon {
+        position: absolute;
+        left: -45px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        background-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(212, 0, 110, 0.1);
+    }
+</style>
+{% endblock %}

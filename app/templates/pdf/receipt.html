@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt #{{ payment.receipt_number }}</title>
+    <style>
+        /* Styles are applied via CSS in the PDF generation function */
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="school-name">{{ school_name }}</div>
+        <div>{{ school_address }}</div>
+        <div>Phone: {{ school_phone }} | Email: {{ school_email }}</div>
+    </div>
+
+    <div class="receipt-title">PAYMENT RECEIPT</div>
+
+    <div class="info-section">
+        <table class="info-table">
+            <tr>
+                <td width="50%" valign="top">
+                    <strong>Student Details:</strong><br>
+                    {{ student.user.first_name }} {{ student.user.last_name }}<br>
+                    Roll Number: {{ student.roll_number }}<br>
+                    Standard: {{ student.standard.name }}<br>
+                    Section: {{ student.section.name }}<br>
+                    {% if student.parent_profile %}
+                    Parent: {{ student.parent_profile.user.first_name }} {{ student.parent_profile.user.last_name }}<br>
+                    Phone: {{ student.parent_profile.phone }}<br>
+                    {% endif %}
+                </td>
+                <td width="50%" valign="top" align="right">
+                    <strong>Receipt Number:</strong> {{ payment.receipt_number }}<br>
+                    <strong>Payment Date:</strong> {{ payment.payment_date.strftime('%d-%m-%Y') }}<br>
+                    <strong>Payment Method:</strong> {{ payment.payment_method|upper }}<br>
+                    {% if payment.transaction_id %}
+                    <strong>Transaction ID:</strong> {{ payment.transaction_id }}<br>
+                    {% endif %}
+                    <strong>Academic Year:</strong> {{ payment.academic_year }}<br>
+                    <strong>Status:</strong> {{ payment.status|upper }}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="payment-details">
+        <h3>Payment Details</h3>
+        <table class="info-table">
+            <tr>
+                <td width="30%"><strong>Payment For:</strong></td>
+                <td>{{ payment_for }}</td>
+            </tr>
+            <tr>
+                <td><strong>Amount Paid:</strong></td>
+                <td>₹{{ "%.2f"|format(payment.amount_paid) }}</td>
+            </tr>
+            {% if payment.late_fee_paid > 0 %}
+            <tr>
+                <td><strong>Late Fee Paid:</strong></td>
+                <td>₹{{ "%.2f"|format(payment.late_fee_paid) }}</td>
+            </tr>
+            {% endif %}
+            {% if payment.discount_applied > 0 %}
+            <tr>
+                <td><strong>Discount Applied:</strong></td>
+                <td>₹{{ "%.2f"|format(payment.discount_applied) }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td><strong>Total Amount:</strong></td>
+                <td>₹{{ "%.2f"|format(payment.total_amount) }}</td>
+            </tr>
+            {% if payment.remarks %}
+            <tr>
+                <td><strong>Remarks:</strong></td>
+                <td>{{ payment.remarks }}</td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>This is a computer-generated receipt and does not require a signature.</p>
+        <p>Generated on: {{ generation_date }}</p>
+        <p>Thank you for your payment.</p>
+    </div>
+</body>
+</html>

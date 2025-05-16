@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Student - School Management System{% endblock %}
+
+{% block styles %}
+<style>
+    /* Add custom styles for the form if needed */
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle board change to update standards
+        const boardSelect = document.getElementById('board_id');
+        const standardSelect = document.getElementById('standard_id');
+        const sectionSelect = document.getElementById('section_id');
+
+        boardSelect.addEventListener('change', function() {
+            const boardId = this.value;
+            if (boardId) {
+                // Redirect to same page with board_id parameter to reload standards
+                window.location.href = "{{ url_for('admin.student_edit', id=student.id) }}?board_id=" + boardId;
+            }
+        });
+
+        // Handle standard change to update sections
+        standardSelect.addEventListener('change', function() {
+            const standardId = this.value;
+            if (standardId) {
+                // Get current board_id if any
+                const boardId = boardSelect.value || '';
+                const boardParam = boardId ? '&board_id=' + boardId : '';
+
+                // Redirect to same page with standard_id parameter to reload sections
+                window.location.href = "{{ url_for('admin.student_edit', id=student.id) }}?standard_id=" + standardId + boardParam;
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Edit Student</h1>
+    <a href="{{ url_for('admin.student_list') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('admin.student_edit', id=student.id) }}">
+            {{ form.hidden_tag() }}
+
+            <h4 class="mb-3">User Information</h4>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.username.label(class="form-label") }}
+                    {{ form.username(class="form-control") }}
+                    {% for error in form.username.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.email.label(class="form-label") }}
+                    {{ form.email(class="form-control") }}
+                    {% for error in form.email.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.first_name.label(class="form-label") }}
+                    {{ form.first_name(class="form-control") }}
+                    {% for error in form.first_name.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.last_name.label(class="form-label") }}
+                    {{ form.last_name(class="form-control") }}
+                    {% for error in form.last_name.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.password.label(class="form-label") }}
+                    {{ form.password(class="form-control") }}
+                    <small class="text-muted">Leave blank to keep current password</small>
+                    {% for error in form.password.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.password2.label(class="form-label") }}
+                    {{ form.password2(class="form-control") }}
+                    {% for error in form.password2.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <hr>
+            <h4 class="mb-3">Student Information</h4>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.roll_number.label(class="form-label") }}
+                    {{ form.roll_number(class="form-control") }}
+                    {% for error in form.roll_number.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.date_of_birth.label(class="form-label") }}
+                    {{ form.date_of_birth(class="form-control", type="date") }}
+                    {% for error in form.date_of_birth.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    {{ form.board_id.label(class="form-label") }}
+                    {{ form.board_id(class="form-select") }}
+                    {% for error in form.board_id.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-4 mb-3">
+                    {{ form.standard_id.label(class="form-label") }}
+                    {{ form.standard_id(class="form-select") }}
+                    {% for error in form.standard_id.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-4 mb-3">
+                    {{ form.section_id.label(class="form-label") }}
+                    {{ form.section_id(class="form-select") }}
+                    {% for error in form.section_id.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.admission_date.label(class="form-label") }}
+                    {{ form.admission_date(class="form-control", type="date") }}
+                    {% for error in form.admission_date.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.parent_id.label(class="form-label") }}
+                    {{ form.parent_id(class="form-select") }}
+                    {% for error in form.parent_id.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.blood_group.label(class="form-label") }}
+                    {{ form.blood_group(class="form-control") }}
+                    {% for error in form.blood_group.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.emergency_contact.label(class="form-label") }}
+                    {{ form.emergency_contact(class="form-control") }}
+                    {% for error in form.emergency_contact.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.previous_school.label(class="form-label") }}
+                    {{ form.previous_school(class="form-control") }}
+                    {% for error in form.previous_school.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.academic_year.label(class="form-label") }}
+                    {{ form.academic_year(class="form-control") }}
+                    {% for error in form.academic_year.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                {{ form.address.label(class="form-label") }}
+                {{ form.address(class="form-control", rows=3) }}
+                {% for error in form.address.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                {{ form.medical_conditions.label(class="form-label") }}
+                {{ form.medical_conditions(class="form-control", rows=3) }}
+                {% for error in form.medical_conditions.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3 form-check">
+                {{ form.is_active(class="form-check-input") }}
+                {{ form.is_active.label(class="form-check-label") }}
+            </div>
+
+            <div class="d-grid gap-2">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

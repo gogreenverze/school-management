@@ -1,0 +1,22 @@
+Dear {{ user.get_full_name() }},
+
+Please find attached the invoice #{{ invoice.invoice_number }} for {{ student.user.get_full_name() }}.
+
+Invoice Details:
+- Invoice Number: {{ invoice.invoice_number }}
+- Invoice Date: {{ invoice.invoice_date.strftime('%d-%m-%Y') }}
+- Due Date: {{ invoice.due_date.strftime('%d-%m-%Y') }}
+- Total Amount: ₹{{ "%.2f"|format(invoice.total_amount) }}
+{% if invoice.status == 'partially_paid' %}
+- Amount Paid: ₹{{ "%.2f"|format(invoice.amount_paid) }}
+- Balance Due: ₹{{ "%.2f"|format(invoice.balance) }}
+{% endif %}
+
+Please make the payment before the due date to avoid late fees.
+
+You can log in to your account to view the invoice details and make the payment online.
+
+Thank you for your prompt attention to this matter.
+
+Regards,
+School Administration

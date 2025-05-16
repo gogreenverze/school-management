@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Homework Details</h1>
+        <div class="mt-2">
+            <a href="{{ url_for('student.dashboard') }}" class="btn btn-secondary me-2">
+                <i class="fas fa-home"></i> Back to Dashboard
+            </a>
+            <a href="{{ url_for('student_homework.list') }}" class="btn btn-info">
+                <i class="fas fa-arrow-left"></i> Back to Homeworks
+            </a>
+        </div>
+    </div>
+    {% if not submission or submission.status != 'graded' %}
+        <a href="{{ url_for('student_homework.submit', homework_id=homework.id) }}" class="btn btn-primary">
+            {% if submission %}
+                <i class="fas fa-edit"></i> Edit Submission
+            {% else %}
+                <i class="fas fa-paper-plane"></i> Submit Homework
+            {% endif %}
+        </a>
+    {% endif %}
+</div>
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">{{ homework.title }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>Class:</strong> {{ homework.class.name }} - {{ homework.class.subject }}</p>
+                        <p><strong>Teacher:</strong> {{ homework.teacher.first_name }} {{ homework.teacher.last_name }}</p>
+                        <p><strong>Assigned Date:</strong> {{ homework.assigned_date.strftime('%d-%m-%Y') }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Due Date:</strong> {{ homework.due_date.strftime('%d-%m-%Y') }}</p>
+                        <p><strong>Max Score:</strong> {{ homework.max_score }}</p>
+                        {% if homework.due_date < now().date() and not submission %}
+                            <p class="text-danger"><i class="fas fa-exclamation-circle"></i> <strong>Status:</strong> Past Due</p>
+                        {% elif submission %}
+                            <p>
+                                <strong>Status:</strong>
+                                <span class="badge
+                                    {% if submission.status == 'graded' %}bg-success
+                                    {% elif submission.status == 'late' %}bg-warning
+                                    {% else %}bg-info{% endif %}">
+                                    {{ submission.status|capitalize }}
+                                </span>
+                            </p>
+                        {% else %}
+                            <p class="text-primary"><i class="fas fa-clock"></i> <strong>Status:</strong> Pending</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <h5>Description:</h5>
+                    <div class="p-3 bg-light rounded">
+                        {{ homework.description|nl2br }}
+                    </div>
+                </div>
+
+                {% if homework.attachment %}
+                    <div class="mb-3">
+                        <h5>Attachment:</h5>
+                        <a href="{{ url_for('static', filename='uploads/homeworks/' + homework.attachment) }}"
+                           class="btn btn-outline-primary" target="_blank">
+                            <i class="fas fa-download"></i> Download Attachment
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        {% if submission %}
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Your Submission</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Submitted On:</strong> {{ submission.submission_date.strftime('%d-%m-%Y %H:%M') }}</p>
+
+                    {% if submission.status == 'graded' %}
+                        <div class="alert alert-success">
+                            <h5 class="alert-heading">Graded!</h5>
+                            <p><strong>Score:</strong> {{ submission.score }} / {{ homework.max_score }}</p>
+                            <p><strong>Graded On:</strong> {{ submission.graded_at.strftime('%d-%m-%Y %H:%M') }}</p>
+                        </div>
+                    {% endif %}
+
+                    {% if submission.content %}
+                        <div class="mb-3">
+                            <h5>Your Answer:</h5>
+                            <div class="p-3 bg-light rounded">
+                                {{ submission.content|nl2br }}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if submission.attachment %}
+                        <div class="mb-3">
+                            <h5>Your Attachment:</h5>
+                            <a href="{{ url_for('static', filename='uploads/submissions/' + submission.attachment) }}"
+                               class="btn btn-outline-primary" target="_blank">
+                                <i class="fas fa-download"></i> View Your Submission
+                            </a>
+                        </div>
+                    {% endif %}
+
+                    {% if submission.status == 'graded' and submission.feedback %}
+                        <div class="mb-3">
+                            <h5>Teacher's Feedback:</h5>
+                            <div class="p-3 bg-light rounded">
+                                {{ submission.feedback|nl2br }}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">Submission Required</h5>
+                </div>
+                <div class="card-body">
+                    <p>You haven't submitted this homework yet.</p>
+
+                    {% if homework.due_date < now().date() %}
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i> This homework is past due. Submit as soon as possible to avoid further penalties.
+                        </div>
+                    {% else %}
+                        <p>Due date: {{ homework.due_date.strftime('%d-%m-%Y') }}</p>
+                        <p>Time remaining:
+                            {% set days_remaining = (homework.due_date - now().date()).days %}
+                            {% if days_remaining > 1 %}
+                                {{ days_remaining }} days
+                            {% elif days_remaining == 1 %}
+                                1 day
+                            {% else %}
+                                Today
+                            {% endif %}
+                        </p>
+                    {% endif %}
+
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('student_homework.submit', homework_id=homework.id) }}" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Submit Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

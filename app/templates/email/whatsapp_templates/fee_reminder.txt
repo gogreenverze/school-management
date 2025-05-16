@@ -1,0 +1,16 @@
+*Fee Payment Reminder*
+
+Dear Parent,
+
+This is a reminder that a fee payment of ₹{{amount}} for {{student_name}} is due on {{due_date}}.
+
+*Fee Details:*
+- Student: {{student_name}}
+- Amount: ₹{{amount}}
+- Due Date: {{due_date}}
+- Fee Type: {{fee_type}}
+
+Please make the payment before the due date to avoid late fees.
+
+Thank you,
+School Management System

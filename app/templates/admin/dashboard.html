@@ -2,8 +2,503 @@
 
 {% block title %}Admin Dashboard - School Management System{% endblock %}
 
+{% block styles %}
+<style>
+    /* Hero section styling */
+    .admin-hero-section {
+        position: relative;
+        background-image: url('https://images.unsplash.com/photo-1577896851231-70ef18881754?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .admin-hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(34, 34, 34, 0.8) 0%, rgba(212, 0, 110, 0.7) 100%);
+        z-index: 1;
+    }
+
+    .admin-hero-content {
+        position: relative;
+        z-index: 2;
+        padding: 40px;
+        text-align: center;
+    }
+
+    .admin-hero-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .admin-hero-subtitle {
+        font-size: 1.2rem;
+        margin-bottom: 0;
+        opacity: 0.9;
+    }
+
+    /* Enhanced stat cards */
+    .stat-card {
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        color: var(--white);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 100%);
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .stat-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 30%;
+        height: 30%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-10px) rotateY(5deg);
+        box-shadow: 0 15px 30px rgba(212, 0, 110, 0.3);
+    }
+
+    .stat-card:hover::before,
+    .stat-card:hover::after {
+        opacity: 1;
+    }
+
+    .stat-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+        transition: transform 0.3s ease;
+        position: relative;
+        display: inline-block;
+    }
+
+    .stat-card h3::after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: rgba(255, 255, 255, 0.7);
+        transition: width 0.5s ease;
+    }
+
+    .stat-card:hover h3 {
+        transform: translateX(5px);
+    }
+
+    .stat-card:hover h3::after {
+        width: 100%;
+    }
+
+    .stat-card p {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin: 0;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover p {
+        transform: scale(1.1);
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    /* Stat card color variations */
+    .stat-card.primary {
+        background: linear-gradient(135deg, var(--primary) 0%, #B8005F 100%);
+    }
+
+    .stat-card.secondary {
+        background: linear-gradient(135deg, var(--secondary) 0%, #3D1C4B 100%);
+    }
+
+    .stat-card.dark {
+        background: linear-gradient(135deg, var(--dark) 0%, #151515 100%);
+    }
+
+    .stat-card.grey {
+        background: linear-gradient(135deg, var(--medium-gray) 0%, #6E6E6E 100%);
+    }
+
+    .stat-card.info {
+        background: linear-gradient(135deg, var(--accent1) 0%, #111A18 100%);
+    }
+
+    .stat-card.success {
+        background: linear-gradient(135deg, var(--green) 0%, #432650 100%);
+    }
+
+    /* Card styling */
+    .admin-dashboard .card {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 25px;
+        transition: all 0.3s ease;
+        border: none;
+        position: relative;
+    }
+
+    .admin-dashboard .card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, transparent 50%, rgba(212, 0, 110, 0.05) 100%);
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .admin-dashboard .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(212, 0, 110, 0.2);
+    }
+
+    .admin-dashboard .card:hover::before {
+        opacity: 1;
+    }
+
+    .admin-dashboard .card-header {
+        background: linear-gradient(135deg, #222222 0%, #444444 100%);
+        color: white;
+        font-weight: 600;
+        padding: 15px 20px;
+        border: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .admin-dashboard .card-header::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 30%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(212, 0, 110, 0.2));
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+
+    .admin-dashboard .card:hover .card-header::after {
+        opacity: 1;
+    }
+
+    .admin-dashboard .card-body {
+        padding: 20px;
+        background: linear-gradient(to bottom, white, rgba(245, 245, 245, 0.5));
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Quick action buttons */
+    .admin-dashboard .btn {
+        border-radius: 8px;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+        border: none;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+    }
+
+    .admin-dashboard .btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(255,255,255,0.2), transparent);
+        transition: all 0.5s ease;
+    }
+
+    .admin-dashboard .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .admin-dashboard .btn:hover::before {
+        left: 100%;
+    }
+
+    .admin-dashboard .btn i {
+        transition: transform 0.3s ease;
+    }
+
+    .admin-dashboard .btn:hover i {
+        transform: translateX(3px);
+    }
+
+    /* Button color variations */
+    .admin-dashboard .btn {
+        color: white;
+    }
+
+    .admin-dashboard .btn strong {
+        color: white;
+    }
+
+    .admin-dashboard .btn-primary {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        border-color: var(--primary);
+    }
+
+    .admin-dashboard .btn-secondary {
+        background: linear-gradient(135deg, var(--secondary) 0%, #3D1C4B 100%);
+        border-color: var(--secondary);
+    }
+
+    .admin-dashboard .btn-success {
+        background: linear-gradient(135deg, var(--green) 0%, #432650 100%);
+        border-color: var(--green);
+    }
+
+    .admin-dashboard .btn-info {
+        background: linear-gradient(135deg, var(--accent1) 0%, #111A18 100%);
+        border-color: var(--accent1);
+    }
+
+    .admin-dashboard .btn-warning {
+        background: linear-gradient(135deg, #F5A9D0 0%, var(--primary-light) 100%);
+        border-color: var(--primary-light);
+        color: var(--dark);
+    }
+
+    .admin-dashboard .btn-warning strong,
+    .admin-dashboard .btn-warning i {
+        color: var(--dark) !important;
+    }
+
+    .admin-dashboard .btn-danger {
+        background: linear-gradient(135deg, var(--accent2) 0%, #5E1228 100%);
+        border-color: var(--accent2);
+    }
+
+    .admin-dashboard .btn-dark {
+        background: linear-gradient(135deg, var(--dark) 0%, #151515 100%);
+        border-color: var(--dark);
+    }
+
+    /* List group styling */
+    .admin-dashboard .list-group-item {
+        border-left: none;
+        border-right: none;
+        transition: all 0.3s ease;
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+        padding: 12px 20px;
+    }
+
+    .admin-dashboard .list-group-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(212, 0, 110, 0.05), transparent);
+        z-index: -1;
+        transition: all 0.5s ease;
+    }
+
+    .admin-dashboard .list-group-item:hover {
+        background-color: rgba(245, 245, 245, 0.8);
+        transform: translateX(5px);
+    }
+
+    .admin-dashboard .list-group-item:hover::before {
+        left: 0;
+    }
+
+    .admin-dashboard .list-group-item strong {
+        color: var(--primary-dark);
+        transition: all 0.3s ease;
+    }
+
+    .admin-dashboard .list-group-item:hover strong {
+        color: var(--primary);
+    }
+
+    /* Badge styling */
+    .admin-dashboard .badge {
+        padding: 6px 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border-radius: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .admin-dashboard .badge:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .admin-dashboard .badge.bg-primary {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+    }
+
+    .admin-dashboard .badge.bg-success {
+        background: linear-gradient(135deg, var(--green) 0%, #432650 100%) !important;
+    }
+
+    .admin-dashboard .badge.bg-info {
+        background: linear-gradient(135deg, var(--accent1) 0%, #111A18 100%) !important;
+    }
+
+    .admin-dashboard .badge.bg-warning {
+        background: linear-gradient(135deg, #F5A9D0 0%, var(--primary-light) 100%) !important;
+        color: var(--dark) !important;
+    }
+
+    .admin-dashboard .badge.bg-danger {
+        background: linear-gradient(135deg, var(--accent2) 0%, #5E1228 100%) !important;
+    }
+
+    .admin-dashboard .badge.bg-secondary {
+        background: linear-gradient(135deg, var(--secondary) 0%, #3D1C4B 100%) !important;
+    }
+
+    /* Event styling */
+    .admin-dashboard .event {
+        transition: all 0.3s ease;
+        padding: 10px 0;
+        position: relative;
+    }
+
+    .admin-dashboard .event::before {
+        content: '';
+        position: absolute;
+        left: -20px;
+        top: 50%;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 5px 0 5px 8px;
+        border-color: transparent transparent transparent var(--primary-light);
+        opacity: 0;
+        transform: translateY(-50%);
+        transition: all 0.3s ease;
+    }
+
+    .admin-dashboard .event:hover {
+        transform: translateX(5px);
+    }
+
+    .admin-dashboard .event:hover::before {
+        opacity: 1;
+        left: -15px;
+    }
+
+    .admin-dashboard .event h6 {
+        color: var(--primary);
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .admin-dashboard .event:hover h6 {
+        color: var(--primary-dark);
+    }
+
+    .admin-dashboard hr {
+        background: linear-gradient(90deg, transparent, rgba(212, 0, 110, 0.2), transparent);
+        height: 1px;
+        border: none;
+        margin: 15px 0;
+    }
+
+    /* Dashboard icon styling */
+    .dashboard-icon {
+        display: inline-block;
+        transition: all 0.3s ease;
+        color: white;
+    }
+
+    .btn:hover .dashboard-icon {
+        transform: translateY(-2px);
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 767px) {
+        .admin-hero-section {
+            margin-bottom: 20px;
+        }
+
+        .admin-hero-content {
+            padding: 30px 20px;
+        }
+
+        .admin-hero-title {
+            font-size: 2rem;
+        }
+
+        .admin-hero-subtitle {
+            font-size: 1rem;
+        }
+
+        .stat-card {
+            margin-bottom: 15px;
+        }
+
+        .stat-card h3 {
+            font-size: 1.2rem;
+        }
+
+        .stat-card p {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<h1 class="mb-4">Admin Dashboard</h1>
+<div class="admin-dashboard">
+<!-- Hero Section -->
+<div class="admin-hero-section">
+    <div class="admin-hero-content">
+        <h1 class="admin-hero-title">Welcome to Admin Dashboard</h1>
+        <p class="admin-hero-subtitle">Manage your school with powerful tools and insights</p>
+    </div>
+</div>
 
 <div class="row">
     <div class="col-md-3">
@@ -33,6 +528,21 @@
 </div>
 
 <div class="row mt-4">
+    <div class="col-md-3">
+        <div class="stat-card info">
+            <h3>Boards</h3>
+            <p>{{ total_boards|default(0) }}</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card success">
+            <h3>Sports</h3>
+            <p>{{ total_sports|default(0) }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
     <div class="col-md-8">
         <div class="card">
             <div class="card-header">
@@ -41,24 +551,82 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-4 mb-3">
-                        <a href="{{ url_for('admin.user_list') }}" class="btn btn-primary w-100">
-                            <i class="fas fa-users"></i> Manage Users
+                        <a href="{{ url_for('admin.board_list') }}" class="btn btn-info w-100 py-3">
+                            <i class="fas fa-university me-2 dashboard-icon"></i> <strong>Manage Boards</strong>
                         </a>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <a href="{{ url_for('admin.content_list') }}" class="btn btn-secondary w-100">
-                            <i class="fas fa-edit"></i> Manage Content
+                        <a href="{{ url_for('admin.standard_list') }}" class="btn btn-primary w-100 py-3">
+                            <i class="fas fa-graduation-cap me-2 dashboard-icon"></i> <strong>Manage Standards</strong>
                         </a>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <a href="/admin/" class="btn btn-dark w-100">
-                            <i class="fas fa-cogs"></i> Admin Panel
+                        <a href="{{ url_for('admin.section_list') }}" class="btn btn-secondary w-100 py-3">
+                            <i class="fas fa-layer-group me-2 dashboard-icon"></i> <strong>Manage Sections</strong>
+                        </a>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('admin.class_list') }}" class="btn btn-dark w-100 py-3">
+                            <i class="fas fa-chalkboard me-2 dashboard-icon"></i> <strong>Manage Classes</strong>
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('admin.teacher_list') }}" class="btn btn-primary w-100 py-3">
+                            <i class="fas fa-chalkboard-teacher me-2 dashboard-icon"></i> <strong>Manage Teachers</strong>
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('admin.student_list') }}" class="btn btn-success w-100 py-3">
+                            <i class="fas fa-user-graduate me-2 dashboard-icon"></i> <strong>Manage Students</strong>
+                        </a>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('admin.user_list') }}" class="btn btn-warning w-100 py-3">
+                            <i class="fas fa-users me-2 dashboard-icon"></i> <strong>Manage Users</strong>
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('admin.content_list') }}" class="btn btn-danger w-100 py-3">
+                            <i class="fas fa-edit me-2 dashboard-icon"></i> <strong>Manage Content</strong>
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="/admin_panel/" class="btn btn-secondary w-100 py-3">
+                            <i class="fas fa-cogs me-2 dashboard-icon"></i> <strong>Admin Panel</strong>
+                        </a>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('admin.sport_list') }}" class="btn btn-success w-100 py-3">
+                            <i class="fas fa-running me-2 dashboard-icon"></i> <strong>Manage Sports</strong>
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('admin_fees.dashboard') }}" class="btn btn-primary w-100 py-3">
+                            <i class="fas fa-money-bill-wave me-2 dashboard-icon"></i> <strong>Fee Management</strong>
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('admin_settings.whatsapp_config') }}" class="btn btn-info w-100 py-3">
+                            <i class="fab fa-whatsapp me-2 dashboard-icon"></i> <strong>WhatsApp Integration</strong>
+                        </a>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('admin_invoices.index') }}" class="btn btn-danger w-100 py-3">
+                            <i class="fas fa-file-invoice me-2 dashboard-icon"></i> <strong>Invoice Management</strong>
                         </a>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="card mt-4">
             <div class="card-header">
                 <h5 class="mb-0">Recent Activities</h5>
@@ -78,7 +646,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <strong>Fee payment received</strong>
-                                <p class="mb-0 text-muted">Jane Smith paid $500 for tuition fees</p>
+                                <p class="mb-0 text-muted">Jane Smith paid ₹500 for tuition fees</p>
                             </div>
                             <span class="text-muted">5 hours ago</span>
                         </div>
@@ -96,9 +664,35 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-4">
         <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Board Information</h5>
+            </div>
+            <div class="card-body">
+                {% if board_data %}
+                <ul class="list-group">
+                    {% for board in board_data %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ board.name }}</strong>
+                            <small class="text-muted d-block">Code: {{ board.code }}</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-primary rounded-pill">{{ board.standards_count }} Standards</span>
+                            <span class="badge bg-success rounded-pill">{{ board.students_count }} Students</span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-center">No boards available. <a href="{{ url_for('admin.board_list') }}">Add a board</a></p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card mt-4">
             <div class="card-header">
                 <h5 class="mb-0">System Information</h5>
             </div>
@@ -113,6 +707,14 @@
                         <span class="badge bg-success rounded-pill">Active</span>
                     </li>
                     <li class="list-group-item d-flex justify-content-between align-items-center">
+                        WhatsApp Integration
+                        {% if whatsapp_enabled %}
+                        <span class="badge bg-success rounded-pill">Configured</span>
+                        {% else %}
+                        <span class="badge bg-warning rounded-pill">Not Configured</span>
+                        {% endif %}
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
                         Storage Usage
                         <span class="badge bg-info rounded-pill">45%</span>
                     </li>
@@ -123,7 +725,7 @@
                 </ul>
             </div>
         </div>
-        
+
         <div class="card mt-4">
             <div class="card-header">
                 <h5 class="mb-0">Upcoming Events</h5>
@@ -143,5 +745,6 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 {% endblock %}

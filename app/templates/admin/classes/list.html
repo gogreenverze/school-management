@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Class Management - School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Class Management</h1>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary mb-2">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    <a href="{{ url_for('admin.class_create') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add New Class
+    </a>
+</div>
+
+{% include 'admin/partials/view_toggle.html' %}
+
+<div class="card">
+    <div class="card-body">
+        <!-- List View -->
+        <div class="list-view">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Standard</th>
+                            <th>Section</th>
+                            <th>Subject</th>
+                            <th>Teacher</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for class_obj in classes %}
+                            <tr>
+                                <td>{{ class_obj.name }}</td>
+                                <td>{{ class_obj.standard.name if class_obj.standard else '' }}</td>
+                                <td>{{ class_obj.section.name if class_obj.section else '' }}</td>
+                                <td>{{ class_obj.subject }}</td>
+                                <td>{{ class_obj.teacher.user.get_full_name() }}</td>
+                                <td>
+                                    {% if class_obj.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('admin.class_edit', id=class_obj.id) }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ class_obj.id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center">No classes found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Card View -->
+        <div class="card-view" style="display: none;">
+            <div class="desktop-card-container">
+                {% for class_obj in classes %}
+                    <div class="desktop-card">
+                        <div class="desktop-card-title">{{ class_obj.name }}</div>
+                        <div class="desktop-card-content">
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Standard</span>
+                                <span class="desktop-field-value">{{ class_obj.standard.name if class_obj.standard else 'N/A' }}</span>
+                            </div>
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Section</span>
+                                <span class="desktop-field-value">{{ class_obj.section.name if class_obj.section else 'N/A' }}</span>
+                            </div>
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Subject</span>
+                                <span class="desktop-field-value">{{ class_obj.subject }}</span>
+                            </div>
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Teacher</span>
+                                <span class="desktop-field-value">{{ class_obj.teacher.user.get_full_name() }}</span>
+                            </div>
+                            <div class="desktop-card-field">
+                                <span class="desktop-field-name">Status</span>
+                                <span class="desktop-field-value">
+                                    {% if class_obj.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="desktop-card-actions">
+                            <a href="{{ url_for('admin.class_edit', id=class_obj.id) }}" class="desktop-card-action-btn">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <button type="button" class="desktop-card-action-btn" data-bs-toggle="modal" data-bs-target="#deleteModal{{ class_obj.id }}">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">No classes found.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Pagination Container -->
+        <div class="pagination-container mt-4"></div>
+    </div>
+</div>
+
+<!-- Delete Modals -->
+{% for class_obj in classes %}
+    <div class="modal fade" id="deleteModal{{ class_obj.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ class_obj.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel{{ class_obj.id }}">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete the class <strong>{{ class_obj.name }}</strong>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="{{ url_for('admin.class_delete', id=class_obj.id) }}" method="POST">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+{% endblock %}

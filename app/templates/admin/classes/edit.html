@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Class - School Management System{% endblock %}
+
+{% block styles %}
+<style>
+    /* Add custom styles for the form if needed */
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle standard change to update sections
+        const standardSelect = document.getElementById('standard_id');
+        const sectionSelect = document.getElementById('section_id');
+        
+        standardSelect.addEventListener('change', function() {
+            const standardId = this.value;
+            if (standardId) {
+                // Redirect to same page with standard_id parameter to reload sections
+                window.location.href = "{{ url_for('admin.class_edit', id=class_obj.id) }}?standard_id=" + standardId;
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Edit Class</h1>
+    <a href="{{ url_for('admin.class_list') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('admin.class_edit', id=class_obj.id) }}">
+            {{ form.hidden_tag() }}
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.name.label(class="form-label") }}
+                    {{ form.name(class="form-control") }}
+                    {% for error in form.name.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.subject.label(class="form-label") }}
+                    {{ form.subject(class="form-control") }}
+                    {% for error in form.subject.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.standard_id.label(class="form-label") }}
+                    {{ form.standard_id(class="form-select") }}
+                    {% for error in form.standard_id.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.section_id.label(class="form-label") }}
+                    {{ form.section_id(class="form-select") }}
+                    {% for error in form.section_id.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.teacher_id.label(class="form-label") }}
+                    {{ form.teacher_id(class="form-select") }}
+                    {% for error in form.teacher_id.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.academic_year.label(class="form-label") }}
+                    {{ form.academic_year(class="form-control") }}
+                    {% for error in form.academic_year.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.schedule.label(class="form-label") }}
+                    {{ form.schedule(class="form-control") }}
+                    <small class="text-muted">e.g., "Mon,Wed,Fri 10:00-11:00"</small>
+                    {% for error in form.schedule.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.room.label(class="form-label") }}
+                    {{ form.room(class="form-control") }}
+                    {% for error in form.room.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="mb-3 form-check">
+                {{ form.is_active(class="form-check-input") }}
+                {{ form.is_active.label(class="form-check-label") }}
+            </div>
+            
+            <div class="d-grid gap-2">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

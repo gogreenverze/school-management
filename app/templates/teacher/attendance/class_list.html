@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Attendance Management</h1>
+        <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-secondary mb-2">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">My Classes</h5>
+    </div>
+    <div class="card-body">
+        {% if classes %}
+            <div class="row">
+                {% for class in classes %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 class-card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">{{ class.name }}</h5>
+                                <span class="badge bg-primary">{{ class.subject }}</span>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <strong>Standard:</strong> {{ class.standard.name }}
+                                </p>
+                                <p class="card-text">
+                                    <strong>Section:</strong> {{ class.section.name if class.section else 'All Sections' }}
+                                </p>
+                                {% if class.schedule %}
+                                    <p class="card-text">
+                                        <strong>Schedule:</strong> {{ class.schedule }}
+                                    </p>
+                                {% endif %}
+                                {% if class.room %}
+                                    <p class="card-text">
+                                        <strong>Room:</strong> {{ class.room }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                            <div class="card-footer">
+                                <div class="btn-group w-100">
+                                    <a href="{{ url_for('teacher_attendance.mark_class_attendance', class_id=class.id) }}" class="btn btn-primary">
+                                        <i class="fas fa-user-check"></i> Mark Attendance
+                                    </a>
+                                    <a href="{{ url_for('teacher_attendance.class_attendance_history', class_id=class.id) }}" class="btn btn-info">
+                                        <i class="fas fa-history"></i> View History
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> You don't have any classes assigned to you yet.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">My Sports Classes</h5>
+    </div>
+    <div class="card-body">
+        <div class="text-end mb-3">
+            <a href="{{ url_for('teacher_attendance.sports_list') }}" class="btn btn-primary">
+                <i class="fas fa-running"></i> Manage Sports Attendance
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .class-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.125);
+    }
+    
+    .class-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(212, 0, 110, 0.2);
+    }
+    
+    .class-card .card-header {
+        background-color: #222222;
+        color: white;
+    }
+    
+    .class-card .card-footer {
+        background-color: #f5f5f5;
+        border-top: 1px solid rgba(0, 0, 0, 0.125);
+    }
+</style>
+{% endblock %}

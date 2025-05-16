@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}WhatsApp Configuration - School Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">WhatsApp Integration Configuration</h1>
+        <div>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- WhatsApp Configuration Card -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">WhatsApp Business API Configuration</h6>
+                    {% if config and config.is_enabled %}
+                    <span class="badge badge-success">Enabled</span>
+                    {% else %}
+                    <span class="badge badge-secondary">Disabled</span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{ url_for('admin_settings.whatsapp_config') }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="form-group">
+                            {{ form.business_name.label(class="form-label") }}
+                            {{ form.business_name(class="form-control") }}
+                            {% if form.business_name.description %}
+                            <small class="form-text text-muted">{{ form.business_name.description }}</small>
+                            {% endif %}
+                            {% if form.business_name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.business_name.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            {{ form.api_key.label(class="form-label") }}
+                            {{ form.api_key(class="form-control") }}
+                            {% if form.api_key.description %}
+                            <small class="form-text text-muted">{{ form.api_key.description }}</small>
+                            {% endif %}
+                            {% if form.api_key.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.api_key.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            {{ form.phone_number_id.label(class="form-label") }}
+                            {{ form.phone_number_id(class="form-control") }}
+                            {% if form.phone_number_id.description %}
+                            <small class="form-text text-muted">{{ form.phone_number_id.description }}</small>
+                            {% endif %}
+                            {% if form.phone_number_id.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.phone_number_id.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            {{ form.api_version.label(class="form-label") }}
+                            {{ form.api_version(class="form-control") }}
+                            {% if form.api_version.description %}
+                            <small class="form-text text-muted">{{ form.api_version.description }}</small>
+                            {% endif %}
+                            {% if form.api_version.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.api_version.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="custom-control custom-switch">
+                                {{ form.is_enabled(class="custom-control-input") }}
+                                {{ form.is_enabled.label(class="custom-control-label") }}
+                            </div>
+                            {% if form.is_enabled.description %}
+                            <small class="form-text text-muted">{{ form.is_enabled.description }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="submit" name="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Configuration
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Test WhatsApp Integration</h6>
+                </div>
+                <div class="card-body">
+                    {% if config and config.last_test_date %}
+                    <div class="mb-3">
+                        <h6>Last Test Result:</h6>
+                        <div class="alert {% if config.last_test_status %}alert-success{% else %}alert-danger{% endif %}">
+                            {{ config.last_test_message }}
+                            <div class="mt-2 small text-muted">
+                                {{ config.last_test_date.strftime('%Y-%m-%d %H:%M:%S') }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <form method="post" action="{{ url_for('admin_settings.test_whatsapp') }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="form-group">
+                            {{ form.test_phone.label(class="form-label") }}
+                            {{ form.test_phone(class="form-control") }}
+                            {% if form.test_phone.description %}
+                            <small class="form-text text-muted">{{ form.test_phone.description }}</small>
+                            {% endif %}
+                            {% if form.test_phone.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.test_phone.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="submit" name="test_button" class="btn btn-info">
+                                <i class="fas fa-paper-plane"></i> Send Test Message
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Setup Instructions</h6>
+                </div>
+                <div class="card-body">
+                    <h6>How to set up WhatsApp Business API:</h6>
+                    <ol class="pl-3">
+                        <li>Create a <a href="https://developers.facebook.com/" target="_blank">Meta Developer account</a></li>
+                        <li>Create a Meta App in the Developer Dashboard</li>
+                        <li>Set up WhatsApp Business API for your app</li>
+                        <li>Create a System User and generate an Access Token</li>
+                        <li>Get your Phone Number ID from the WhatsApp settings</li>
+                        <li>Enter these details in the configuration form</li>
+                        <li>Create message templates in the Meta Developer Dashboard</li>
+                    </ol>
+                    <a href="https://developers.facebook.com/docs/whatsapp/cloud-api/get-started" target="_blank" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-external-link-alt"></i> Official Documentation
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

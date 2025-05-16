@@ -1,0 +1,18 @@
+*OVERDUE FEE PAYMENT REMINDER*
+
+Dear Parent,
+
+This is an urgent reminder that a fee payment of ₹{{amount}} for {{student_name}} was due on {{due_date}} and is now {{days_overdue}} days overdue.
+
+*Fee Details:*
+- Student: {{student_name}}
+- Amount: ₹{{amount}}
+- Due Date: {{due_date}}
+- Days Overdue: {{days_overdue}}
+- Late Fee: ₹{{late_fee}}
+- Total Amount Due: ₹{{total_amount}}
+
+Please make the payment as soon as possible to avoid additional late fees and administrative actions.
+
+Thank you,
+School Management System

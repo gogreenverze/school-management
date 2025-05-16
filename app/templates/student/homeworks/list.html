@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>My Homeworks</h1>
+        <a href="{{ url_for('student.dashboard') }}" class="btn btn-secondary mb-2">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<ul class="nav nav-tabs mb-4" id="homeworkTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab" aria-controls="pending" aria-selected="true">
+            Pending
+            <span class="badge bg-primary">{{ pending_homeworks|length }}</span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="submitted-tab" data-bs-toggle="tab" data-bs-target="#submitted" type="button" role="tab" aria-controls="submitted" aria-selected="false">
+            Submitted
+            <span class="badge bg-info">{{ submitted_homeworks|length }}</span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="graded-tab" data-bs-toggle="tab" data-bs-target="#graded" type="button" role="tab" aria-controls="graded" aria-selected="false">
+            Graded
+            <span class="badge bg-success">{{ graded_homeworks|length }}</span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="past-due-tab" data-bs-toggle="tab" data-bs-target="#past-due" type="button" role="tab" aria-controls="past-due" aria-selected="false">
+            Past Due
+            <span class="badge bg-danger">{{ past_due_homeworks|length }}</span>
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="homeworkTabsContent">
+    <!-- Pending Homeworks -->
+    <div class="tab-pane fade show active" id="pending" role="tabpanel" aria-labelledby="pending-tab">
+        {% if pending_homeworks %}
+            <div class="row">
+                {% for homework in pending_homeworks %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 homework-card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">{{ homework.title }}</h5>
+                                <span class="badge bg-primary">
+                                    Due: {{ homework.due_date.strftime('%d-%m-%Y') }}
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <strong>Class:</strong> {{ homework.class.name }} - {{ homework.class.subject }}
+                                </p>
+                                <p class="card-text">
+                                    <strong>Assigned:</strong> {{ homework.assigned_date.strftime('%d-%m-%Y') }}
+                                </p>
+                                <p class="card-text">
+                                    <strong>Description:</strong> {{ homework.description|truncate(100) }}
+                                </p>
+                                {% if homework.attachment %}
+                                    <p class="card-text">
+                                        <i class="fas fa-paperclip"></i> Attachment available
+                                    </p>
+                                {% endif %}
+                            </div>
+                            <div class="card-footer">
+                                <div class="btn-group w-100">
+                                    <a href="{{ url_for('student_homework.view', homework_id=homework.id) }}" class="btn btn-info">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    <a href="{{ url_for('student_homework.submit', homework_id=homework.id) }}" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane"></i> Submit
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> You don't have any pending homeworks.
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Submitted Homeworks -->
+    <div class="tab-pane fade" id="submitted" role="tabpanel" aria-labelledby="submitted-tab">
+        {% if submitted_homeworks %}
+            <div class="row">
+                {% for homework in submitted_homeworks %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 homework-card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">{{ homework.title }}</h5>
+                                <span class="badge bg-info">
+                                    Submitted
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <strong>Class:</strong> {{ homework.class.name }} - {{ homework.class.subject }}
+                                </p>
+                                <p class="card-text">
+                                    <strong>Due Date:</strong> {{ homework.due_date.strftime('%d-%m-%Y') }}
+                                </p>
+                                <p class="card-text">
+                                    <strong>Submitted On:</strong> {{ submissions[homework.id].submission_date.strftime('%d-%m-%Y %H:%M') }}
+                                </p>
+                                {% if submissions[homework.id].status == 'late' %}
+                                    <p class="card-text text-warning">
+                                        <i class="fas fa-exclamation-triangle"></i> Submitted late
+                                    </p>
+                                {% endif %}
+                            </div>
+                            <div class="card-footer">
+                                <div class="btn-group w-100">
+                                    <a href="{{ url_for('student_homework.view', homework_id=homework.id) }}" class="btn btn-info">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    <a href="{{ url_for('student_homework.submit', homework_id=homework.id) }}" class="btn btn-secondary">
+                                        <i class="fas fa-edit"></i> Edit Submission
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> You don't have any submitted homeworks awaiting grading.
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Graded Homeworks -->
+    <div class="tab-pane fade" id="graded" role="tabpanel" aria-labelledby="graded-tab">
+        {% if graded_homeworks %}
+            <div class="row">
+                {% for homework in graded_homeworks %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 homework-card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">{{ homework.title }}</h5>
+                                <span class="badge bg-success">
+                                    Graded
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <strong>Class:</strong> {{ homework.class.name }} - {{ homework.class.subject }}
+                                </p>
+                                <p class="card-text">
+                                    <strong>Score:</strong> {{ submissions[homework.id].score }} / {{ homework.max_score }}
+                                </p>
+                                <p class="card-text">
+                                    <strong>Submitted On:</strong> {{ submissions[homework.id].submission_date.strftime('%d-%m-%Y %H:%M') }}
+                                </p>
+                                <p class="card-text">
+                                    <strong>Graded On:</strong> {{ submissions[homework.id].graded_at.strftime('%d-%m-%Y %H:%M') }}
+                                </p>
+                            </div>
+                            <div class="card-footer">
+                                <a href="{{ url_for('student_homework.view', homework_id=homework.id) }}" class="btn btn-info w-100">
+                                    <i class="fas fa-eye"></i> View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> You don't have any graded homeworks yet.
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Past Due Homeworks -->
+    <div class="tab-pane fade" id="past-due" role="tabpanel" aria-labelledby="past-due-tab">
+        {% if past_due_homeworks %}
+            <div class="row">
+                {% for homework in past_due_homeworks %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 homework-card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">{{ homework.title }}</h5>
+                                <span class="badge bg-danger">
+                                    Due: {{ homework.due_date.strftime('%d-%m-%Y') }}
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <strong>Class:</strong> {{ homework.class.name }} - {{ homework.class.subject }}
+                                </p>
+                                <p class="card-text">
+                                    <strong>Assigned:</strong> {{ homework.assigned_date.strftime('%d-%m-%Y') }}
+                                </p>
+                                <p class="card-text text-danger">
+                                    <i class="fas fa-exclamation-circle"></i> This homework is past due
+                                </p>
+                            </div>
+                            <div class="card-footer">
+                                <div class="btn-group w-100">
+                                    <a href="{{ url_for('student_homework.view', homework_id=homework.id) }}" class="btn btn-info">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    <a href="{{ url_for('student_homework.submit', homework_id=homework.id) }}" class="btn btn-warning">
+                                        <i class="fas fa-paper-plane"></i> Submit Late
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i> You don't have any past due homeworks. Great job!
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .homework-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.125);
+    }
+
+    .homework-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(212, 0, 110, 0.2);
+    }
+
+    .homework-card .card-header {
+        background-color: #222222;
+        color: white;
+    }
+
+    .homework-card .card-footer {
+        background-color: #f5f5f5;
+        border-top: 1px solid rgba(0, 0, 0, 0.125);
+    }
+
+    .nav-tabs .nav-link {
+        color: #222222;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: #D4006E;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

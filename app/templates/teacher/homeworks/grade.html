@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Grade Homework Submission</h1>
+        <h4 class="text-muted">{{ homework.title }}</h4>
+        <div class="mt-2">
+            <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-secondary me-2">
+                <i class="fas fa-home"></i> Back to Dashboard
+            </a>
+            <a href="{{ url_for('teacher_homework.submissions', homework_id=homework.id) }}" class="btn btn-info">
+                <i class="fas fa-arrow-left"></i> Back to Submissions
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-5">
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Student Submission</h5>
+            </div>
+            <div class="card-body">
+                <h5>{{ student.user.first_name }} {{ student.user.last_name }} ({{ student.roll_number }})</h5>
+                <p><strong>Submitted:</strong> {{ submission.submission_date.strftime('%d-%m-%Y %H:%M') }}</p>
+
+                {% if submission.content %}
+                    <div class="mt-3">
+                        <h6>Submission Content:</h6>
+                        <div class="p-3 bg-light rounded">
+                            {{ submission.content|nl2br }}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if submission.attachment %}
+                    <div class="mt-3">
+                        <h6>Attachment:</h6>
+                        <a href="{{ url_for('static', filename='uploads/submissions/' + submission.attachment) }}"
+                           class="btn btn-outline-primary" target="_blank">
+                            <i class="fas fa-download"></i> Download Attachment
+                        </a>
+                    </div>
+                {% endif %}
+
+                {% if not submission.content and not submission.attachment %}
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-exclamation-triangle"></i> This submission has no content or attachment.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Homework Details</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Class:</strong> {{ homework.class.name }} - {{ homework.class.subject }}</p>
+                <p><strong>Assigned Date:</strong> {{ homework.assigned_date.strftime('%d-%m-%Y') }}</p>
+                <p><strong>Due Date:</strong> {{ homework.due_date.strftime('%d-%m-%Y') }}</p>
+                <p><strong>Max Score:</strong> {{ homework.max_score }}</p>
+
+                {% if homework.attachment %}
+                    <p>
+                        <strong>Homework Attachment:</strong>
+                        <a href="{{ url_for('static', filename='uploads/homeworks/' + homework.attachment) }}" target="_blank">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </p>
+                {% endif %}
+
+                <div class="mt-3">
+                    <h6>Description:</h6>
+                    <p>{{ homework.description }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Grade Submission</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {{ form.hidden_tag() }}
+
+                    <div class="form-group mb-3">
+                        {{ form.score.label(class="form-label") }}
+                        <div class="input-group">
+                            {{ form.score(class="form-control" + (" is-invalid" if form.score.errors else ""), type="number", min="0", max=homework.max_score) }}
+                            <span class="input-group-text">/ {{ homework.max_score }}</span>
+                        </div>
+                        {% for error in form.score.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-group mb-3">
+                        {{ form.status.label(class="form-label") }}
+                        {{ form.status(class="form-select" + (" is-invalid" if form.status.errors else "")) }}
+                        {% for error in form.status.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-group mb-3">
+                        {{ form.feedback.label(class="form-label") }}
+                        {{ form.feedback(class="form-control" + (" is-invalid" if form.feedback.errors else ""), rows=5) }}
+                        {% for error in form.feedback.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                        <small class="form-text text-muted">Provide constructive feedback to help the student improve.</small>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('teacher_homework.submissions', homework_id=homework.id) }}" class="btn btn-secondary me-md-2">Cancel</a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

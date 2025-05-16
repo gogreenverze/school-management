@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice #{{ invoice.invoice_number }}</title>
+    <style>
+        /* Styles are applied via CSS in the PDF generation function */
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="school-name">{{ school_name }}</div>
+        <div>{{ school_address }}</div>
+        <div>Phone: {{ school_phone }} | Email: {{ school_email }}</div>
+    </div>
+
+    <div class="invoice-title">INVOICE</div>
+
+    <div class="info-section">
+        <table class="info-table">
+            <tr>
+                <td width="50%" valign="top">
+                    <strong>Bill To:</strong><br>
+                    {{ student.user.first_name }} {{ student.user.last_name }}<br>
+                    Roll Number: {{ student.roll_number }}<br>
+                    Standard: {{ student.standard.name }}<br>
+                    Section: {{ student.section.name }}<br>
+                    {% if student.parent_profile %}
+                    Parent: {{ student.parent_profile.user.first_name }} {{ student.parent_profile.user.last_name }}<br>
+                    Phone: {{ student.parent_profile.phone }}<br>
+                    {% endif %}
+                </td>
+                <td width="50%" valign="top" align="right">
+                    <strong>Invoice Number:</strong> {{ invoice.invoice_number }}<br>
+                    <strong>Invoice Date:</strong> {{ invoice.invoice_date.strftime('%d-%m-%Y') }}<br>
+                    <strong>Due Date:</strong> {{ invoice.due_date.strftime('%d-%m-%Y') }}<br>
+                    <strong>Academic Year:</strong> {{ invoice.academic_year }}<br>
+                    <strong>Status:</strong> 
+                    {% if invoice.status == 'paid' %}
+                        <span class="status-paid">PAID</span>
+                    {% elif invoice.status == 'overdue' %}
+                        <span class="status-overdue">OVERDUE</span>
+                    {% elif invoice.status == 'partially_paid' %}
+                        <span class="status-pending">PARTIALLY PAID</span>
+                    {% else %}
+                        <span class="status-pending">{{ invoice.status|upper }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="items-section">
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th width="5%">No.</th>
+                    <th width="45%">Description</th>
+                    <th width="10%">Quantity</th>
+                    <th width="20%">Unit Price (₹)</th>
+                    <th width="20%">Total (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ "%.2f"|format(item.unit_price) }}</td>
+                    <td>{{ "%.2f"|format(item.total) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="total-section">
+        <table width="40%" align="right">
+            <tr>
+                <td><strong>Subtotal:</strong></td>
+                <td align="right">₹{{ "%.2f"|format(invoice.subtotal) }}</td>
+            </tr>
+            {% if invoice.discount > 0 %}
+            <tr>
+                <td><strong>Discount:</strong></td>
+                <td align="right">₹{{ "%.2f"|format(invoice.discount) }}</td>
+            </tr>
+            {% endif %}
+            {% if invoice.tax > 0 %}
+            <tr>
+                <td><strong>Tax:</strong></td>
+                <td align="right">₹{{ "%.2f"|format(invoice.tax) }}</td>
+            </tr>
+            {% endif %}
+            {% if invoice.late_fee > 0 %}
+            <tr>
+                <td><strong>Late Fee:</strong></td>
+                <td align="right">₹{{ "%.2f"|format(invoice.late_fee) }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td><strong>Total Amount:</strong></td>
+                <td align="right">₹{{ "%.2f"|format(invoice.total_amount) }}</td>
+            </tr>
+            {% if invoice.amount_paid > 0 %}
+            <tr>
+                <td><strong>Amount Paid:</strong></td>
+                <td align="right">₹{{ "%.2f"|format(invoice.amount_paid) }}</td>
+            </tr>
+            <tr>
+                <td><strong>Balance Due:</strong></td>
+                <td align="right">₹{{ "%.2f"|format(invoice.balance) }}</td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+
+    {% if invoice.notes %}
+    <div class="notes-section" style="margin-top: 30px; clear: both;">
+        <strong>Notes:</strong>
+        <p>{{ invoice.notes }}</p>
+    </div>
+    {% endif %}
+
+    {% if invoice.terms %}
+    <div class="terms-section" style="margin-top: 20px;">
+        <strong>Terms and Conditions:</strong>
+        <p>{{ invoice.terms }}</p>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        <p>This is a computer-generated invoice and does not require a signature.</p>
+        <p>Generated on: {{ generation_date }}</p>
+        <p>For any queries, please contact the school office.</p>
+    </div>
+</body>
+</html>

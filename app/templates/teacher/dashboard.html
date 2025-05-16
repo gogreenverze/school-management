@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+
+{% block title %}Teacher Dashboard - School Management System{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>Welcome, {{ current_user.first_name }}!</h1>
+            <p class="lead text-muted">Teacher Dashboard</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <p class="mb-1"><strong>Teacher ID:</strong> {{ teacher_profile.employee_id }}</p>
+            {% if teacher_profile.primary_subject %}
+                <p class="mb-1"><strong>Subject:</strong> {{ teacher_profile.primary_subject }}</p>
+            {% endif %}
+            {% if teacher_profile.created_at %}
+                <p class="mb-0"><strong>Joined:</strong> {{ teacher_profile.created_at.strftime('%d-%m-%Y') }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card h-100 dashboard-card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">My Classes</h5>
+                </div>
+                <div class="card-body">
+                    {% if classes_pagination.items %}
+                        <div class="row">
+                            {% for class in classes_pagination.items %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="class-card p-3 rounded border">
+                                        <h5 class="mb-1">{{ class.name }}</h5>
+                                        <p class="mb-1 text-muted">{{ class.subject }}</p>
+                                        <p class="mb-1">
+                                            <small>
+                                                <strong>Standard:</strong> {{ class.standard.name }}
+                                                {% if class.section %}
+                                                    <strong>Section:</strong> {{ class.section.name }}
+                                                {% endif %}
+                                            </small>
+                                        </p>
+                                        <div class="mt-2">
+                                            <a href="{{ url_for('teacher_attendance.mark_class_attendance', class_id=class.id) }}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-user-check"></i> Attendance
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Pagination Controls -->
+                        {% if classes_pagination.pages > 1 %}
+                        <div class="pagination-container mt-3">
+                            <nav aria-label="Classes pagination">
+                                <ul class="pagination pagination-sm justify-content-center">
+                                    <!-- Previous page button -->
+                                    <li class="page-item {% if classes_pagination.page == 1 %}disabled{% endif %}">
+                                        <a class="page-link" href="{{ url_for('teacher.dashboard', page=classes_pagination.prev_num) if classes_pagination.has_prev else '#' }}" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+
+                                    <!-- Page numbers -->
+                                    {% for page_num in classes_pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+                                        {% if page_num %}
+                                            <li class="page-item {% if page_num == classes_pagination.page %}active{% endif %}">
+                                                <a class="page-link" href="{{ url_for('teacher.dashboard', page=page_num) }}">{{ page_num }}</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link">...</span>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    <!-- Next page button -->
+                                    <li class="page-item {% if not classes_pagination.has_next %}disabled{% endif %}">
+                                        <a class="page-link" href="{{ url_for('teacher.dashboard', page=classes_pagination.next_num) if classes_pagination.has_next else '#' }}" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> No classes assigned to you yet.
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('teacher_attendance.class_list') }}" class="btn btn-primary w-100">
+                        <i class="fas fa-chalkboard-teacher"></i> Manage Classes
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100 dashboard-card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Homework Management</h5>
+                </div>
+                <div class="card-body">
+                    {% if homeworks %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Class</th>
+                                        <th>Due Date</th>
+                                        <th>Submissions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for homework in homeworks %}
+                                        <tr>
+                                            <td>{{ homework.title }}</td>
+                                            <td>{{ homework.class.name }}</td>
+                                            <td>{{ homework.due_date.strftime('%d-%m-%Y') }}</td>
+                                            <td>
+                                                <a href="{{ url_for('teacher_homework.submissions', homework_id=homework.id) }}" class="btn btn-sm btn-outline-primary">
+                                                    {{ homework.submissions.count() }} Submissions
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> You haven't assigned any homework yet.
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <div class="btn-group w-100">
+                        <a href="{{ url_for('teacher_homework.list') }}" class="btn btn-primary">
+                            <i class="fas fa-list"></i> All Homeworks
+                        </a>
+                        <a href="{{ url_for('teacher_homework.create') }}" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Assign New
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card dashboard-card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Sports Classes</h5>
+                </div>
+                <div class="card-body">
+                    {% if sports %}
+                        <ul class="list-group">
+                            {% for sport in sports %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ sport.name }}
+                                    <a href="{{ url_for('teacher_attendance.mark_sport_attendance', sport_id=sport.id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-user-check"></i> Attendance
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> No sports classes assigned to you.
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('teacher_attendance.sports_list') }}" class="btn btn-primary w-100">
+                        <i class="fas fa-running"></i> Manage Sports
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card dashboard-card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Notifications</h5>
+                </div>
+                <div class="card-body">
+                    {% if notifications %}
+                        <ul class="list-group">
+                            {% for notification in notifications %}
+                                <li class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ notification.title }}</h6>
+                                        <small class="text-muted">{{ notification.created_at.strftime('%d-%m-%Y') }}</small>
+                                    </div>
+                                    <p class="mb-1">{{ notification.message }}</p>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> No new notifications.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card dashboard-card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Quick Links</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('teacher_homework.list') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-book"></i> Homework Management
+                        </a>
+                        <a href="{{ url_for('teacher_attendance.class_list') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-user-check"></i> Attendance Management
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-calendar"></i> School Calendar
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-chart-bar"></i> Reports
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .dashboard-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 20px;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(212, 0, 110, 0.2);
+    }
+
+    .class-card {
+        background-color: #f8f9fa;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .class-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Pagination styling */
+    .pagination-container {
+        overflow-x: auto;
+        padding: 5px 0;
+    }
+
+    .pagination {
+        margin-bottom: 0;
+    }
+
+    .page-link {
+        color: var(--primary);
+        border-color: rgba(212, 0, 110, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .page-link:hover {
+        color: var(--white);
+        background-color: var(--primary-light);
+        border-color: var(--primary);
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(212, 0, 110, 0.2);
+    }
+
+    .page-item.active .page-link {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .page-item.disabled .page-link {
+        color: #6c757d;
+        border-color: #dee2e6;
+    }
+
+    /* Mobile-specific pagination styles */
+    @media (max-width: 768px) {
+        .pagination .page-link {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.875rem;
+        }
+
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .pagination {
+            flex-wrap: nowrap;
+        }
+    }
+</style>
+{% endblock %}

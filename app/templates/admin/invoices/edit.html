@@ -1,0 +1,417 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Edit Invoice - School Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <h1 class="h3 mb-3 mb-md-0">Edit Invoice #{{ invoice.invoice_number }}</h1>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ url_for('admin_invoices.view', id=invoice.id) }}" class="btn btn-outline-info">
+                <i class="fas fa-eye"></i> View Invoice
+            </a>
+            <a href="{{ url_for('admin_invoices.list') }}" class="btn btn-outline-primary">
+                <i class="fas fa-list"></i> Back to Invoices
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 order-2 order-md-1">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Invoice Details</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{ url_for('admin_invoices.edit', id=invoice.id) }}">
+                        {{ form.csrf_token }}
+
+                        <!-- Student and Invoice Type -->
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="student_id" class="form-label">Student <span class="text-danger">*</span></label>
+                                {{ form.student_id(class="form-select form-select-mobile" + (" is-invalid" if form.student_id.errors else "")) }}
+                                {% for error in form.student_id.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="invoice_type" class="form-label">Invoice Type <span class="text-danger">*</span></label>
+                                {{ form.invoice_type(class="form-select form-select-mobile" + (" is-invalid" if form.invoice_type.errors else "")) }}
+                                {% for error in form.invoice_type.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Dates and Academic Year -->
+                        <div class="row mb-3">
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <label for="invoice_date" class="form-label">Invoice Date <span class="text-danger">*</span></label>
+                                {{ form.invoice_date(class="form-control form-control-mobile" + (" is-invalid" if form.invoice_date.errors else ""), type="date") }}
+                                {% for error in form.invoice_date.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <label for="due_date" class="form-label">Due Date <span class="text-danger">*</span></label>
+                                {{ form.due_date(class="form-control form-control-mobile" + (" is-invalid" if form.due_date.errors else ""), type="date") }}
+                                {% for error in form.due_date.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-4">
+                                <label for="academic_year" class="form-label">Academic Year <span class="text-danger">*</span></label>
+                                {{ form.academic_year(class="form-control form-control-mobile" + (" is-invalid" if form.academic_year.errors else "")) }}
+                                {% for error in form.academic_year.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Subtotal, Discount, Tax, Late Fee -->
+                        <div class="row mb-3">
+                            <div class="col-6 col-md-3 mb-3 mb-md-0">
+                                <label for="subtotal" class="form-label">Subtotal <span class="text-danger">*</span></label>
+                                {{ form.subtotal(class="form-control form-control-mobile" + (" is-invalid" if form.subtotal.errors else ""), type="number", step="0.01", readonly=true) }}
+                                {% for error in form.subtotal.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                                <small class="form-text text-muted">Calculated from line items</small>
+                            </div>
+                            <div class="col-6 col-md-3 mb-3 mb-md-0">
+                                <label for="discount" class="form-label">Discount</label>
+                                {{ form.discount(class="form-control form-control-mobile" + (" is-invalid" if form.discount.errors else ""), type="number", step="0.01") }}
+                                {% for error in form.discount.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-6 col-md-3 mb-3 mb-md-0">
+                                <label for="tax" class="form-label">Tax</label>
+                                {{ form.tax(class="form-control form-control-mobile" + (" is-invalid" if form.tax.errors else ""), type="number", step="0.01") }}
+                                {% for error in form.tax.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <label for="late_fee" class="form-label">Late Fee</label>
+                                {{ form.late_fee(class="form-control form-control-mobile" + (" is-invalid" if form.late_fee.errors else ""), type="number", step="0.01") }}
+                                {% for error in form.late_fee.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Total Amount, Amount Paid, Balance -->
+                        <div class="row mb-3">
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <label for="total_amount" class="form-label">Total Amount <span class="text-danger">*</span></label>
+                                {{ form.total_amount(class="form-control form-control-mobile" + (" is-invalid" if form.total_amount.errors else ""), type="number", step="0.01") }}
+                                {% for error in form.total_amount.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <label for="amount_paid" class="form-label">Amount Paid</label>
+                                {{ form.amount_paid(class="form-control form-control-mobile" + (" is-invalid" if form.amount_paid.errors else ""), type="number", step="0.01") }}
+                                {% for error in form.amount_paid.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-4">
+                                <label for="balance" class="form-label">Balance <span class="text-danger">*</span></label>
+                                {{ form.balance(class="form-control form-control-mobile" + (" is-invalid" if form.balance.errors else ""), type="number", step="0.01") }}
+                                {% for error in form.balance.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Notes and Terms -->
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="notes" class="form-label">Notes</label>
+                                {{ form.notes(class="form-control form-control-mobile" + (" is-invalid" if form.notes.errors else ""), rows="4") }}
+                                {% for error in form.notes.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="terms" class="form-label">Terms and Conditions</label>
+                                {{ form.terms(class="form-control form-control-mobile" + (" is-invalid" if form.terms.errors else ""), rows="4") }}
+                                {% for error in form.terms.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="d-grid d-md-flex justify-content-md-end gap-2 mt-4">
+                            <a href="{{ url_for('admin_invoices.view', id=invoice.id) }}" class="btn btn-secondary btn-lg-mobile me-md-2">Cancel</a>
+                            {{ form.submit(class="btn btn-primary btn-lg-mobile") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 order-1 order-md-2 mb-4 mb-md-0">
+            <!-- Invoice Items Section -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Invoice Items</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{ url_for('admin_invoices.add_item', id=invoice.id) }}" class="mb-4">
+                        {{ item_form.csrf_token }}
+                        {{ item_form.invoice_id(value=invoice.id) }}
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                            {{ item_form.description(class="form-control form-control-mobile") }}
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-6 mb-3 mb-md-0">
+                                <label for="quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
+                                {{ item_form.quantity(class="form-control form-control-mobile", type="number", step="1") }}
+                            </div>
+                            <div class="col-6">
+                                <label for="unit_price" class="form-label">Unit Price <span class="text-danger">*</span></label>
+                                {{ item_form.unit_price(class="form-control form-control-mobile", type="number", step="0.01") }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-6 mb-3 mb-md-0">
+                                <label for="discount" class="form-label">Discount</label>
+                                {{ item_form.discount(class="form-control form-control-mobile", type="number", step="0.01") }}
+                            </div>
+                            <div class="col-6">
+                                <label for="total" class="form-label">Total <span class="text-danger">*</span></label>
+                                {{ item_form.total(class="form-control form-control-mobile", type="number", step="0.01", readonly=true) }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="fee_type" class="form-label">Fee Type <span class="text-danger">*</span></label>
+                            {{ item_form.fee_type(class="form-select form-select-mobile", id="fee_type") }}
+                        </div>
+
+                        <div class="mb-3" id="sport_selection" style="display: none;">
+                            <label for="sport_id" class="form-label">Sport <span class="text-danger">*</span></label>
+                            {{ item_form.sport_id(class="form-select form-select-mobile") }}
+                        </div>
+
+                        {{ item_form.fee_schedule_id() }}
+                        {{ item_form.fee_schedule_type() }}
+
+                        <div class="d-grid mt-4">
+                            {{ item_form.submit(class="btn btn-success btn-lg-mobile") }}
+                        </div>
+                    </form>
+
+                    <hr>
+
+                    <h6 class="font-weight-bold">Current Items</h6>
+                    {% if items %}
+                        <!-- Desktop view -->
+                        <div class="d-none d-md-block">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Description</th>
+                                            <th>Qty</th>
+                                            <th>Price</th>
+                                            <th>Total</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in items %}
+                                        <tr>
+                                            <td>{{ item.description }}</td>
+                                            <td>{{ item.quantity }}</td>
+                                            <td>₹{{ "%.2f"|format(item.unit_price) }}</td>
+                                            <td>₹{{ "%.2f"|format(item.total) }}</td>
+                                            <td>
+                                                <form method="post" action="{{ url_for('admin_invoices.remove_item', id=invoice.id, item_id=item.id) }}" onsubmit="return confirm('Are you sure you want to remove this item?');" class="remove-item-form">
+                                                    <button type="submit" class="btn btn-sm btn-danger">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Mobile view -->
+                        <div class="d-md-none">
+                            {% for item in items %}
+                            <div class="card mb-2 border-left-primary">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="mb-0 text-primary">{{ item.description }}</h6>
+                                        <form method="post" action="{{ url_for('admin_invoices.remove_item', id=invoice.id, item_id=item.id) }}" onsubmit="return confirm('Are you sure you want to remove this item?');" class="remove-item-form">
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <small class="text-muted">Qty:</small><br>
+                                            {{ item.quantity }}
+                                        </div>
+                                        <div class="col-4">
+                                            <small class="text-muted">Price:</small><br>
+                                            ₹{{ "%.2f"|format(item.unit_price) }}
+                                        </div>
+                                        <div class="col-4">
+                                            <small class="text-muted">Total:</small><br>
+                                            <strong>₹{{ "%.2f"|format(item.total) }}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            No items added to this invoice yet.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Calculate total and balance automatically for invoice
+        const subtotalInput = document.getElementById('subtotal');
+        const discountInput = document.getElementById('discount');
+        const taxInput = document.getElementById('tax');
+        const lateFeeInput = document.getElementById('late_fee');
+        const totalAmountInput = document.getElementById('total_amount');
+        const amountPaidInput = document.getElementById('amount_paid');
+        const balanceInput = document.getElementById('balance');
+
+        // Calculate subtotal from line items
+        function calculateSubtotalFromItems() {
+            let subtotal = 0;
+            const itemRows = document.querySelectorAll('table.table-sm tbody tr');
+
+            itemRows.forEach(row => {
+                const totalText = row.querySelector('td:nth-child(4)').textContent;
+                const totalValue = parseFloat(totalText.replace('₹', '').trim()) || 0;
+                subtotal += totalValue;
+            });
+
+            subtotalInput.value = subtotal.toFixed(2);
+            calculateTotal();
+            return subtotal;
+        }
+
+        function calculateTotal() {
+            const subtotal = parseFloat(subtotalInput.value) || 0;
+            const discount = parseFloat(discountInput.value) || 0;
+            const tax = parseFloat(taxInput.value) || 0;
+            const lateFee = parseFloat(lateFeeInput.value) || 0;
+
+            const total = subtotal - discount + tax + lateFee;
+            totalAmountInput.value = total.toFixed(2);
+
+            calculateBalance();
+        }
+
+        function calculateBalance() {
+            const total = parseFloat(totalAmountInput.value) || 0;
+            const paid = parseFloat(amountPaidInput.value) || 0;
+
+            const balance = total - paid;
+            balanceInput.value = balance.toFixed(2);
+        }
+
+        // Calculate subtotal on page load
+        calculateSubtotalFromItems();
+
+        // Add event listeners for invoice calculations
+        discountInput.addEventListener('input', calculateTotal);
+        taxInput.addEventListener('input', calculateTotal);
+        lateFeeInput.addEventListener('input', calculateTotal);
+        amountPaidInput.addEventListener('input', calculateBalance);
+        totalAmountInput.addEventListener('input', calculateBalance);
+
+        // Calculate item total automatically
+        const itemQuantityInput = document.getElementById('quantity');
+        const itemUnitPriceInput = document.getElementById('unit_price');
+        const itemDiscountInput = document.getElementById('discount');
+        const itemTotalInput = document.getElementById('total');
+
+        function calculateItemTotal() {
+            const quantity = parseFloat(itemQuantityInput.value) || 0;
+            const unitPrice = parseFloat(itemUnitPriceInput.value) || 0;
+            const discount = parseFloat(itemDiscountInput.value) || 0;
+
+            const total = (quantity * unitPrice) - discount;
+            itemTotalInput.value = total.toFixed(2);
+        }
+
+        // Add event listeners for item calculations
+        itemQuantityInput.addEventListener('input', calculateItemTotal);
+        itemUnitPriceInput.addEventListener('input', calculateItemTotal);
+        itemDiscountInput.addEventListener('input', calculateItemTotal);
+
+        // Show/hide sport selection based on fee type
+        const feeTypeSelect = document.getElementById('fee_type');
+        const sportSelectionDiv = document.getElementById('sport_selection');
+
+        function toggleSportSelection() {
+            if (feeTypeSelect.value === 'sports') {
+                sportSelectionDiv.style.display = 'block';
+            } else {
+                sportSelectionDiv.style.display = 'none';
+            }
+        }
+
+        // Initial check
+        toggleSportSelection();
+
+        // Add event listener for fee type changes
+        feeTypeSelect.addEventListener('change', toggleSportSelection);
+
+        // Handle add item form submission
+        const addItemForm = document.querySelector('form[action*="add_item"]');
+        if (addItemForm) {
+            addItemForm.addEventListener('submit', function(e) {
+                // Let the form submit normally, but recalculate on page reload
+                // The server will handle adding the item
+                localStorage.setItem('recalculateSubtotal', 'true');
+            });
+        }
+
+        // Handle remove item form submission
+        const removeItemForms = document.querySelectorAll('.remove-item-form');
+        if (removeItemForms.length > 0) {
+            removeItemForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    // Let the form submit normally, but recalculate on page reload
+                    // The server will handle removing the item
+                    localStorage.setItem('recalculateSubtotal', 'true');
+                });
+            });
+        }
+
+        // Check if we need to recalculate after a page reload
+        if (localStorage.getItem('recalculateSubtotal') === 'true') {
+            calculateSubtotalFromItems();
+            localStorage.removeItem('recalculateSubtotal');
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,362 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard - School Management System{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>Welcome, {{ current_user.first_name }}!</h1>
+            <p class="lead text-muted">Student Dashboard</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <p class="mb-1"><strong>Roll Number:</strong> {{ student_profile.roll_number }}</p>
+            <p class="mb-1"><strong>Standard:</strong> {{ student_profile.standard.name }}</p>
+            <p class="mb-0"><strong>Section:</strong> {{ student_profile.section.name }}</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card h-100 dashboard-card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Attendance Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="attendance-stat">
+                                <h2 class="mb-0">{{ attendance_percentage|round|int }}%</h2>
+                                <p class="text-muted">Overall Attendance</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="attendance-stat">
+                                <h2 class="mb-0">{{ total_classes }}</h2>
+                                <p class="text-muted">Total Classes</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-center mt-3">
+                        <div class="col-3">
+                            <div class="attendance-stat bg-success text-white rounded p-2">
+                                <h4 class="mb-0">{{ present_count }}</h4>
+                                <small>Present</small>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="attendance-stat bg-danger text-white rounded p-2">
+                                <h4 class="mb-0">{{ absent_count }}</h4>
+                                <small>Absent</small>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="attendance-stat bg-warning text-dark rounded p-2">
+                                <h4 class="mb-0">{{ late_count }}</h4>
+                                <small>Late</small>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="attendance-stat bg-info text-white rounded p-2">
+                                <h4 class="mb-0">{{ excused_count }}</h4>
+                                <small>Excused</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('student_attendance.list') }}" class="btn btn-primary w-100">
+                        <i class="fas fa-calendar-check"></i> View Attendance
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 dashboard-card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Homework Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="homework-stat">
+                                <h2 class="mb-0">{{ pending_homeworks|length }}</h2>
+                                <p class="text-muted">Pending Homeworks</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="homework-stat">
+                                <h2 class="mb-0">{{ total_homeworks }}</h2>
+                                <p class="text-muted">Total Homeworks</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if pending_homeworks %}
+                        <div class="mt-3">
+                            <h6>Upcoming Deadlines:</h6>
+                            <ul class="list-group">
+                                {% for homework in pending_homeworks[:3] %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ homework.title }}</strong>
+                                            <div class="text-muted small">{{ homework.class.name }}</div>
+                                        </div>
+                                        <span class="badge bg-primary">Due: {{ homework.due_date.strftime('%d-%m-%Y') }}</span>
+                                    </li>
+                                {% endfor %}
+
+                                {% if pending_homeworks|length > 3 %}
+                                    <li class="list-group-item text-center text-muted">
+                                        <small>And {{ pending_homeworks|length - 3 }} more...</small>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-success mt-3">
+                            <i class="fas fa-check-circle"></i> You're all caught up! No pending homeworks.
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('student_homework.list') }}" class="btn btn-primary w-100">
+                        <i class="fas fa-book"></i> View Homeworks
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 dashboard-card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Fee Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="fee-stat">
+                                <h2 class="mb-0">{{ total_fees }}</h2>
+                                <p class="text-muted">Pending Fees</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="fee-stat {% if overdue_count > 0 %}bg-danger text-white rounded p-2{% endif %}">
+                                <h2 class="mb-0">{{ overdue_count }}</h2>
+                                <p class="{% if overdue_count > 0 %}text-white{% else %}text-muted{% endif %}">Overdue</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if overdue_fees %}
+                        <div class="mt-3">
+                            <h6 class="text-danger">Overdue Payments:</h6>
+                            <ul class="list-group">
+                                {% for fee in overdue_fees[:2] %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ fee.name }}</strong>
+                                            <div class="text-muted small">{{ fee.fee_type }}</div>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="text-danger">₹{{ fee.amount }}</div>
+                                            <small class="badge bg-danger">{{ fee.days_overdue }} days overdue</small>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+
+                                {% if overdue_fees|length > 2 %}
+                                    <li class="list-group-item text-center text-muted">
+                                        <small>And {{ overdue_fees|length - 2 }} more overdue...</small>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    {% if upcoming_fees %}
+                        <div class="mt-3">
+                            <h6>Upcoming Payments:</h6>
+                            <ul class="list-group">
+                                {% for fee in upcoming_fees[:2] %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ fee.name }}</strong>
+                                            <div class="text-muted small">{{ fee.fee_type }}</div>
+                                        </div>
+                                        <div class="text-end">
+                                            <div>₹{{ fee.amount }}</div>
+                                            <small class="badge bg-primary">Due: {{ fee.due_date.strftime('%d-%m-%Y') }}</small>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+
+                                {% if upcoming_fees|length > 2 %}
+                                    <li class="list-group-item text-center text-muted">
+                                        <small>And {{ upcoming_fees|length - 2 }} more upcoming...</small>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    {% if not upcoming_fees and not overdue_fees %}
+                        <div class="alert alert-success mt-3">
+                            <i class="fas fa-check-circle"></i> No pending fee payments.
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('student.fees') }}" class="btn btn-primary w-100">
+                        <i class="fas fa-money-bill-wave"></i> View All Fees
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card dashboard-card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">My Classes</h5>
+                </div>
+                <div class="card-body">
+                    {% if classes %}
+                        <ul class="list-group">
+                            {% for class in classes %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ class.name }}
+                                    <span class="badge bg-secondary">{{ class.subject }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> No classes assigned yet.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sports Programs -->
+        <div class="col-md-4">
+            <div class="card dashboard-card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">My Sports Programs</h5>
+                </div>
+                <div class="card-body">
+                    {% if sports %}
+                        <ul class="list-group">
+                            {% for sport in sports %}
+                                <li class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ sport.name }}</strong>
+                                            <div class="text-muted small">
+                                                <i class="fas fa-calendar-alt me-1"></i> {{ sport.schedule }}
+                                            </div>
+                                        </div>
+                                        <a href="{{ url_for('main.sport_detail', sport_id=sport.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> You haven't joined any sports programs yet.
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="{{ url_for('main.sports') }}" class="btn btn-primary">
+                                <i class="fas fa-running me-1"></i> Explore Sports
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card dashboard-card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Notifications</h5>
+                </div>
+                <div class="card-body">
+                    {% if notifications %}
+                        <ul class="list-group">
+                            {% for notification in notifications %}
+                                <li class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ notification.title }}</h6>
+                                        <small class="text-muted">{{ notification.created_at.strftime('%d-%m-%Y') }}</small>
+                                    </div>
+                                    <p class="mb-1">{{ notification.message }}</p>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> No new notifications.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card dashboard-card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Quick Links</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('student_homework.list') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-book"></i> My Homeworks
+                        </a>
+                        <a href="{{ url_for('student_attendance.list') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-calendar-check"></i> My Attendance
+                        </a>
+                        <a href="{{ url_for('student_invoices.list') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-file-invoice"></i> My Invoices
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-calendar"></i> School Calendar
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-file-alt"></i> Exam Results
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .dashboard-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 20px;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(212, 0, 110, 0.2);
+    }
+
+    .attendance-stat, .homework-stat, .fee-stat {
+        padding: 10px;
+        border-radius: 5px;
+        transition: transform 0.3s ease;
+    }
+
+    .attendance-stat:hover, .homework-stat:hover, .fee-stat:hover {
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}
