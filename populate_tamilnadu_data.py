@@ -390,11 +390,13 @@ def populate_sports(conn):
 
                 # Add sport fee
                 cursor.execute('''
-                    INSERT INTO sport_fees (sport_id, fee_amount, fee_description, is_active, created_at, updated_at)
-                    VALUES (?, ?, ?, ?, ?, ?)
+                    INSERT INTO sport_fees (sport_id, name, amount, frequency, description, is_active, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     sport_id,
+                    f"{sport['name']} Monthly Fee",
                     sport['fee'],
+                    'Monthly',
                     f"Monthly fee for {sport['name']}",
                     1,
                     now,
@@ -674,7 +676,7 @@ def populate_students(conn, num_students=200):
                     ))
 
                     # Get sport fee
-                    cursor.execute("SELECT id, fee_amount FROM sport_fees WHERE sport_id = ?", (sport_id,))
+                    cursor.execute("SELECT id, amount FROM sport_fees WHERE sport_id = ?", (sport_id,))
                     fee_data = cursor.fetchone()
 
                     if fee_data:
