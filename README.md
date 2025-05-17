@@ -63,12 +63,18 @@ A comprehensive school management system built with Python and Flask, featuring 
    python create_db.py
    ```
 
-6. Run the application:
+6. Import the mock data (optional):
+   ```
+   python import_database.py
+   ```
+   This will import all the mock data for Tamil Nadu schools, including students, teachers, classes, standards, sections, boards, and sports activities.
+
+7. Run the application:
    ```
    python run.py
    ```
 
-7. Access the application at http://127.0.0.1:5007
+8. Access the application at http://127.0.0.1:5007
 
 ## Default Login Credentials
 
